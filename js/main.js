@@ -1,3 +1,67 @@
+// --- Lightbox ---
+(function () {
+  // Build overlay DOM once
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML =
+    '<button class="lightbox-close" aria-label="Close">&times;</button>' +
+    '<button class="lightbox-prev" aria-label="Previous">&#8249;</button>' +
+    '<img src="" alt="">' +
+    '<button class="lightbox-next" aria-label="Next">&#8250;</button>';
+  document.body.appendChild(overlay);
+
+  const img    = overlay.querySelector('img');
+  const closeBtn = overlay.querySelector('.lightbox-close');
+  const prevBtn  = overlay.querySelector('.lightbox-prev');
+  const nextBtn  = overlay.querySelector('.lightbox-next');
+
+  let images = [];   // NodeList of gallery imgs on the current page
+  let current = 0;
+
+  function open(index) {
+    current = index;
+    img.src = images[current].src;
+    img.alt = images[current].alt;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    img.src = '';
+  }
+
+  function prev() { open((current - 1 + images.length) % images.length); }
+  function next() { open((current + 1) % images.length); }
+
+  // Wire controls
+  closeBtn.addEventListener('click', close);
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  // Click backdrop to close
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) close();
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function (e) {
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape')      close();
+    if (e.key === 'ArrowLeft')   prev();
+    if (e.key === 'ArrowRight')  next();
+  });
+
+  // Attach click handlers to all .photo-gallery imgs after DOM is ready
+  document.addEventListener('DOMContentLoaded', function () {
+    images = Array.from(document.querySelectorAll('.photo-gallery img'));
+    images.forEach(function (imgEl, i) {
+      imgEl.addEventListener('click', function () { open(i); });
+    });
+  });
+})();
+
 // --- Navigation ---
 document.addEventListener('DOMContentLoaded', () => {
   const navbar = document.querySelector('.navbar');
