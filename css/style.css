@@ -624,6 +624,16 @@ h1, h2, h3, h4 {
   object-position: center 5%;
 }
 
+/* Photo gallery with captions */
+.photo-gallery .photo-with-caption {
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-gallery .photo-with-caption img {
+  margin-bottom: 8px;
+}
+
 /* --- Lightbox --- */
 .lightbox-overlay {
   display: none;
