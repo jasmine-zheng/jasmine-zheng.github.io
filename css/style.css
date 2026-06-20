@@ -154,7 +154,7 @@ h1, h2, h3, h4 {
 
 .hero-carousel {
   width: 100%;
-  height: 480px;
+  height: 528px;
 }
 
 .hero-carousel .swiper-slide {
@@ -736,7 +736,7 @@ h1, h2, h3, h4 {
   }
 
   .hero-carousel {
-    height: 300px;
+    height: 330px;
   }
 
   .about-grid {
@@ -786,7 +786,7 @@ h1, h2, h3, h4 {
   }
 
   .hero-carousel {
-    height: 220px;
+    height: 242px;
   }
 }
 
