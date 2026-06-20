@@ -367,7 +367,7 @@ h1, h2, h3, h4 {
   color: var(--text-light);
 }
 
-/* --- Explore More Grid (lisapan.com style) --- */
+/* --- Explore More Grid --- */
 .explore-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
