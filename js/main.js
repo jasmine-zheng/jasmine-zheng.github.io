@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new Swiper('.hero-carousel', {
       loop: true,
       autoplay: {
-        delay: 4000,
+        delay: 6000,
         disableOnInteraction: false,
       },
       effect: 'fade',
