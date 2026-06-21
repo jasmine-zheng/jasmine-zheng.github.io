@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Images Gallery - Jasmine Zheng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .images-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+    }
+    .image-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .image-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      display: block;
+    }
+    .image-info {
+      padding: 12px;
+      background: #f9f9f9;
+    }
+    .image-number {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .image-title {
+      font-size: 15px;
+      color: #444;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .image-filename {
+      font-size: 14px;
+      color: #666;
+      word-break: break-all;
+    }
+    .section-title {
+      margin: 30px 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="page-hero">
+    <div class="container">
+      <h1>Images Gallery</h1>
+      <p>All photos from upload_202606 directory</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+
+      <h2 class="section-title">Main Directory</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/upload_202606/Jasmin_2026.PNG" alt="Jasmin_2026.PNG">
+          <div class="image-info">
+            <div class="image-number">#1</div>
+            <div class="image-title">Jasmine Zheng 2026</div>
+            <div class="image-filename">Jasmin_2026.PNG</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Dance Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/upload_202606/dance/2V0A2487.JPG" alt="2V0A2487.JPG">
+          <div class="image-info">
+            <div class="image-number">#2</div>
+            <div class="image-title">Dance Performance 1</div>
+            <div class="image-filename">2V0A2487.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/2V0A2494.JPG" alt="2V0A2494.JPG">
+          <div class="image-info">
+            <div class="image-number">#3</div>
+            <div class="image-title">Dance Performance 2</div>
+            <div class="image-filename">2V0A2494.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/2V0A3193.JPG" alt="2V0A3193.JPG">
+          <div class="image-info">
+            <div class="image-number">#4</div>
+            <div class="image-title">Dance Performance 3</div>
+            <div class="image-filename">2V0A3193.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room140539.JPG" alt="AnaheimFinals_Room140539.JPG">
+          <div class="image-info">
+            <div class="image-number">#5</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 140539</div>
+            <div class="image-filename">AnaheimFinals_Room140539.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room146131.JPG" alt="AnaheimFinals_Room146131.JPG">
+          <div class="image-info">
+            <div class="image-number">#6</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 146131</div>
+            <div class="image-filename">AnaheimFinals_Room146131.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room146149.JPG" alt="AnaheimFinals_Room146149.JPG">
+          <div class="image-info">
+            <div class="image-number">#7</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 146149</div>
+            <div class="image-filename">AnaheimFinals_Room146149.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room146213.JPG" alt="AnaheimFinals_Room146213.JPG">
+          <div class="image-info">
+            <div class="image-number">#8</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 146213</div>
+            <div class="image-filename">AnaheimFinals_Room146213.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room146226.JPG" alt="AnaheimFinals_Room146226.JPG">
+          <div class="image-info">
+            <div class="image-number">#9</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 146226</div>
+            <div class="image-filename">AnaheimFinals_Room146226.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room148572.JPG" alt="AnaheimFinals_Room148572.JPG">
+          <div class="image-info">
+            <div class="image-number">#10</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 148572</div>
+            <div class="image-filename">AnaheimFinals_Room148572.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/AnaheimFinals_Room148617.JPG" alt="AnaheimFinals_Room148617.JPG">
+          <div class="image-info">
+            <div class="image-number">#11</div>
+            <div class="image-title">Anaheim Finals 2025 - Room 148617</div>
+            <div class="image-filename">AnaheimFinals_Room148617.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_0768.JPG" alt="DSC_0768.JPG">
+          <div class="image-info">
+            <div class="image-number">#12</div>
+            <div class="image-title">Dance Performance DSC 0768</div>
+            <div class="image-filename">DSC_0768.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_0774.JPG" alt="DSC_0774.JPG">
+          <div class="image-info">
+            <div class="image-number">#13</div>
+            <div class="image-title">Dance Performance DSC 0774</div>
+            <div class="image-filename">DSC_0774.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_0963.JPG" alt="DSC_0963.JPG">
+          <div class="image-info">
+            <div class="image-number">#14</div>
+            <div class="image-title">Dance Performance DSC 0963</div>
+            <div class="image-filename">DSC_0963.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_6852.JPG" alt="DSC_6852.JPG">
+          <div class="image-info">
+            <div class="image-number">#15</div>
+            <div class="image-title">Dance Performance DSC 6852</div>
+            <div class="image-filename">DSC_6852.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_6853.JPG" alt="DSC_6853.JPG">
+          <div class="image-info">
+            <div class="image-number">#16</div>
+            <div class="image-title">Dance Performance DSC 6853</div>
+            <div class="image-filename">DSC_6853.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_6884.JPG" alt="DSC_6884.JPG">
+          <div class="image-info">
+            <div class="image-number">#17</div>
+            <div class="image-title">Dance Performance DSC 6884</div>
+            <div class="image-filename">DSC_6884.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_6972.JPG" alt="DSC_6972.JPG">
+          <div class="image-info">
+            <div class="image-number">#18</div>
+            <div class="image-title">Dance Performance DSC 6972</div>
+            <div class="image-filename">DSC_6972.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/DSC_7413.JPG" alt="DSC_7413.JPG">
+          <div class="image-info">
+            <div class="image-number">#19</div>
+            <div class="image-title">Dance Performance DSC 7413</div>
+            <div class="image-filename">DSC_7413.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_0073.JPG" alt="IMG_0073.JPG">
+          <div class="image-info">
+            <div class="image-number">#20</div>
+            <div class="image-title">Dance Performance IMG 0073</div>
+            <div class="image-filename">IMG_0073.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_0074.JPG" alt="IMG_0074.JPG">
+          <div class="image-info">
+            <div class="image-number">#21</div>
+            <div class="image-title">Dance Performance IMG 0074</div>
+            <div class="image-filename">IMG_0074.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_0076.JPG" alt="IMG_0076.JPG">
+          <div class="image-info">
+            <div class="image-number">#22</div>
+            <div class="image-title">Dance Performance IMG 0076</div>
+            <div class="image-filename">IMG_0076.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_2306.JPG" alt="IMG_2306.JPG">
+          <div class="image-info">
+            <div class="image-number">#23</div>
+            <div class="image-title">Dance Performance IMG 2306</div>
+            <div class="image-filename">IMG_2306.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_3912.jpg" alt="IMG_3912.jpg">
+          <div class="image-info">
+            <div class="image-number">#24</div>
+            <div class="image-title">Dance Performance IMG 3912</div>
+            <div class="image-filename">IMG_3912.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_3931.jpg" alt="IMG_3931.jpg">
+          <div class="image-info">
+            <div class="image-number">#25</div>
+            <div class="image-title">Dance Performance IMG 3931</div>
+            <div class="image-filename">IMG_3931.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_4211.jpg" alt="IMG_4211.jpg">
+          <div class="image-info">
+            <div class="image-number">#26</div>
+            <div class="image-title">Dance Performance IMG 4211</div>
+            <div class="image-filename">IMG_4211.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_4491 2.JPG" alt="IMG_4491 2.JPG">
+          <div class="image-info">
+            <div class="image-number">#27</div>
+            <div class="image-title">Dance Performance IMG 4491</div>
+            <div class="image-filename">IMG_4491 2.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_4603.jpg" alt="IMG_4603.jpg">
+          <div class="image-info">
+            <div class="image-number">#28</div>
+            <div class="image-title">Dance Performance IMG 4603</div>
+            <div class="image-filename">IMG_4603.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_4621.jpg" alt="IMG_4621.jpg">
+          <div class="image-info">
+            <div class="image-number">#29</div>
+            <div class="image-title">Dance Performance IMG 4621</div>
+            <div class="image-filename">IMG_4621.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_4624.jpg" alt="IMG_4624.jpg">
+          <div class="image-info">
+            <div class="image-number">#30</div>
+            <div class="image-title">Dance Performance IMG 4624</div>
+            <div class="image-filename">IMG_4624.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5066.JPG" alt="IMG_5066.JPG">
+          <div class="image-info">
+            <div class="image-number">#31</div>
+            <div class="image-title">Dance Performance IMG 5066</div>
+            <div class="image-filename">IMG_5066.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5280.JPG" alt="IMG_5280.JPG">
+          <div class="image-info">
+            <div class="image-number">#32</div>
+            <div class="image-title">Dance Performance IMG 5280</div>
+            <div class="image-filename">IMG_5280.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5289.JPG" alt="IMG_5289.JPG">
+          <div class="image-info">
+            <div class="image-number">#33</div>
+            <div class="image-title">Dance Performance IMG 5289</div>
+            <div class="image-filename">IMG_5289.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5308.JPG" alt="IMG_5308.JPG">
+          <div class="image-info">
+            <div class="image-number">#34</div>
+            <div class="image-title">Dance Performance IMG 5308</div>
+            <div class="image-filename">IMG_5308.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5322.JPG" alt="IMG_5322.JPG">
+          <div class="image-info">
+            <div class="image-number">#35</div>
+            <div class="image-title">Dance Performance IMG 5322</div>
+            <div class="image-filename">IMG_5322.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5802.jpg" alt="IMG_5802.jpg">
+          <div class="image-info">
+            <div class="image-number">#36</div>
+            <div class="image-title">Dance Performance IMG 5802</div>
+            <div class="image-filename">IMG_5802.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5807.jpg" alt="IMG_5807.jpg">
+          <div class="image-info">
+            <div class="image-number">#37</div>
+            <div class="image-title">Dance Performance IMG 5807</div>
+            <div class="image-filename">IMG_5807.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5808.jpg" alt="IMG_5808.jpg">
+          <div class="image-info">
+            <div class="image-number">#38</div>
+            <div class="image-title">Dance Performance IMG 5808</div>
+            <div class="image-filename">IMG_5808.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_5822.JPG" alt="IMG_5822.JPG">
+          <div class="image-info">
+            <div class="image-number">#39</div>
+            <div class="image-title">Dance Performance IMG 5822</div>
+            <div class="image-filename">IMG_5822.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_8214.jpg" alt="IMG_8214.jpg">
+          <div class="image-info">
+            <div class="image-number">#40</div>
+            <div class="image-title">Dance Performance IMG 8214</div>
+            <div class="image-filename">IMG_8214.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_8219.jpg" alt="IMG_8219.jpg">
+          <div class="image-info">
+            <div class="image-number">#41</div>
+            <div class="image-title">Dance Performance IMG 8219</div>
+            <div class="image-filename">IMG_8219.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_8251.jpg" alt="IMG_8251.jpg">
+          <div class="image-info">
+            <div class="image-number">#42</div>
+            <div class="image-title">Dance Performance IMG 8251</div>
+            <div class="image-filename">IMG_8251.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/IMG_8511.JPG" alt="IMG_8511.JPG">
+          <div class="image-info">
+            <div class="image-number">#43</div>
+            <div class="image-title">Dance Performance IMG 8511</div>
+            <div class="image-filename">IMG_8511.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618115210_22_3.jpg" alt="Image_20260618115210_22_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#44</div>
+            <div class="image-title">Dance Photo 2026-06-18 11:52</div>
+            <div class="image-filename">Image_20260618115210_22_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618124140_33_3.jpg" alt="Image_20260618124140_33_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#45</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:41</div>
+            <div class="image-filename">Image_20260618124140_33_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618124527_37_3.jpg" alt="Image_20260618124527_37_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#46</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:45</div>
+            <div class="image-filename">Image_20260618124527_37_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618124625_38_3.jpg" alt="Image_20260618124625_38_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#47</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:46</div>
+            <div class="image-filename">Image_20260618124625_38_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618124858_40_3.jpg" alt="Image_20260618124858_40_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#48</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:48</div>
+            <div class="image-filename">Image_20260618124858_40_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618124952_41_3.jpg" alt="Image_20260618124952_41_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#49</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:49</div>
+            <div class="image-filename">Image_20260618124952_41_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618125047_43_3.jpg" alt="Image_20260618125047_43_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#50</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:50</div>
+            <div class="image-filename">Image_20260618125047_43_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618125146_45_3.jpg" alt="Image_20260618125146_45_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#51</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:51</div>
+            <div class="image-filename">Image_20260618125146_45_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/Image_20260618125301_47_3.jpg" alt="Image_20260618125301_47_3.jpg">
+          <div class="image-info">
+            <div class="image-number">#52</div>
+            <div class="image-title">Dance Photo 2026-06-18 12:53</div>
+            <div class="image-filename">Image_20260618125301_47_3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/RichYeePhoto-246.JPG" alt="RichYeePhoto-246.JPG">
+          <div class="image-info">
+            <div class="image-number">#53</div>
+            <div class="image-title">Rich Yee Photo 246</div>
+            <div class="image-filename">RichYeePhoto-246.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/RichYeePhoto-330.JPG" alt="RichYeePhoto-330.JPG">
+          <div class="image-info">
+            <div class="image-number">#54</div>
+            <div class="image-title">Rich Yee Photo 330</div>
+            <div class="image-filename">RichYeePhoto-330.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/San Francisco_Room1166700.JPG" alt="San Francisco_Room1166700.JPG">
+          <div class="image-info">
+            <div class="image-number">#55</div>
+            <div class="image-title">San Francisco Competition - Room 1166700</div>
+            <div class="image-filename">San Francisco_Room1166700.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1114507.JPG" alt="SanFranciscoBay_Room1114507.JPG">
+          <div class="image-info">
+            <div class="image-number">#56</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1114507</div>
+            <div class="image-filename">SanFranciscoBay_Room1114507.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1114550.JPG" alt="SanFranciscoBay_Room1114550.JPG">
+          <div class="image-info">
+            <div class="image-number">#57</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1114550</div>
+            <div class="image-filename">SanFranciscoBay_Room1114550.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1115345.JPG" alt="SanFranciscoBay_Room1115345.JPG">
+          <div class="image-info">
+            <div class="image-number">#58</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1115345</div>
+            <div class="image-filename">SanFranciscoBay_Room1115345.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1115356.JPG" alt="SanFranciscoBay_Room1115356.JPG">
+          <div class="image-info">
+            <div class="image-number">#59</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1115356</div>
+            <div class="image-filename">SanFranciscoBay_Room1115356.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1133334.JPG" alt="SanFranciscoBay_Room1133334.JPG">
+          <div class="image-info">
+            <div class="image-number">#60</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1133334</div>
+            <div class="image-filename">SanFranciscoBay_Room1133334.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1139406.JPG" alt="SanFranciscoBay_Room1139406.JPG">
+          <div class="image-info">
+            <div class="image-number">#61</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1139406</div>
+            <div class="image-filename">SanFranciscoBay_Room1139406.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1139468.JPG" alt="SanFranciscoBay_Room1139468.JPG">
+          <div class="image-info">
+            <div class="image-number">#62</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1139468</div>
+            <div class="image-filename">SanFranciscoBay_Room1139468.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_124757.JPG" alt="SanFranciscoBay_Room1_124757.JPG">
+          <div class="image-info">
+            <div class="image-number">#63</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_124757</div>
+            <div class="image-filename">SanFranciscoBay_Room1_124757.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_124767.JPG" alt="SanFranciscoBay_Room1_124767.JPG">
+          <div class="image-info">
+            <div class="image-number">#64</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_124767</div>
+            <div class="image-filename">SanFranciscoBay_Room1_124767.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_124814.JPG" alt="SanFranciscoBay_Room1_124814.JPG">
+          <div class="image-info">
+            <div class="image-number">#65</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_124814</div>
+            <div class="image-filename">SanFranciscoBay_Room1_124814.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_128406.JPG" alt="SanFranciscoBay_Room1_128406.JPG">
+          <div class="image-info">
+            <div class="image-number">#66</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_128406</div>
+            <div class="image-filename">SanFranciscoBay_Room1_128406.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_128438.JPG" alt="SanFranciscoBay_Room1_128438.JPG">
+          <div class="image-info">
+            <div class="image-number">#67</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_128438</div>
+            <div class="image-filename">SanFranciscoBay_Room1_128438.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_128458.JPG" alt="SanFranciscoBay_Room1_128458.JPG">
+          <div class="image-info">
+            <div class="image-number">#68</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_128458</div>
+            <div class="image-filename">SanFranciscoBay_Room1_128458.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/SanFranciscoBay_Room1_128470.JPG" alt="SanFranciscoBay_Room1_128470.JPG">
+          <div class="image-info">
+            <div class="image-number">#69</div>
+            <div class="image-title">San Francisco Bay Competition - Room 1_128470</div>
+            <div class="image-filename">SanFranciscoBay_Room1_128470.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/TriValley_Room1493939.JPG" alt="TriValley_Room1493939.JPG">
+          <div class="image-info">
+            <div class="image-number">#70</div>
+            <div class="image-title">Tri Valley Competition - Room 1493939</div>
+            <div class="image-filename">TriValley_Room1493939.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/TriValley_Room1494148.JPG" alt="TriValley_Room1494148.JPG">
+          <div class="image-info">
+            <div class="image-number">#71</div>
+            <div class="image-title">Tri Valley Competition - Room 1494148</div>
+            <div class="image-filename">TriValley_Room1494148.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/dance/dance_stage1.jpg" alt="dance_stage1.jpg">
+          <div class="image-info">
+            <div class="image-number">#72</div>
+            <div class="image-title">Dance Stage Performance</div>
+            <div class="image-filename">dance_stage1.jpg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Piano Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/upload_202606/piano/American Protege June_6A_2023-1954.JPG" alt="American Protege June_6A_2023-1954.JPG">
+          <div class="image-info">
+            <div class="image-number">#73</div>
+            <div class="image-title">American Protege Competition 2023 - 1954</div>
+            <div class="image-filename">American Protege June_6A_2023-1954.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/piano/American Protege June_6A_2023-1956.JPG" alt="American Protege June_6A_2023-1956.JPG">
+          <div class="image-info">
+            <div class="image-number">#74</div>
+            <div class="image-title">American Protege Competition 2023 - 1956</div>
+            <div class="image-filename">American Protege June_6A_2023-1956.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/piano/American Protege June_6A_2023-1979.JPG" alt="American Protege June_6A_2023-1979.JPG">
+          <div class="image-info">
+            <div class="image-number">#75</div>
+            <div class="image-title">American Protege Competition 2023 - 1979</div>
+            <div class="image-filename">American Protege June_6A_2023-1979.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/piano/American Protege June_6A_2023-1982.JPG" alt="American Protege June_6A_2023-1982.JPG">
+          <div class="image-info">
+            <div class="image-number">#76</div>
+            <div class="image-title">American Protege Competition 2023 - 1982</div>
+            <div class="image-filename">American Protege June_6A_2023-1982.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/piano/IMG_6301.jpg" alt="IMG_6301.jpg">
+          <div class="image-info">
+            <div class="image-number">#77</div>
+            <div class="image-title">Piano Performance IMG 6301</div>
+            <div class="image-filename">IMG_6301.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/piano/IMG_6310.jpg" alt="IMG_6310.jpg">
+          <div class="image-info">
+            <div class="image-number">#78</div>
+            <div class="image-title">Piano Performance IMG 6310</div>
+            <div class="image-filename">IMG_6310.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/piano/IMG_6316.jpg" alt="IMG_6316.jpg">
+          <div class="image-info">
+            <div class="image-number">#79</div>
+            <div class="image-title">Piano Performance IMG 6316</div>
+            <div class="image-filename">IMG_6316.jpg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Writing Workshop Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/upload_202606/writing_workshop/IMG_9076.jpg" alt="IMG_9076.jpg">
+          <div class="image-info">
+            <div class="image-number">#80</div>
+            <div class="image-title">Writing Workshop IMG 9076</div>
+            <div class="image-filename">IMG_9076.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/writing_workshop/IMG_9114.jpg" alt="IMG_9114.jpg">
+          <div class="image-info">
+            <div class="image-number">#81</div>
+            <div class="image-title">Writing Workshop IMG 9114</div>
+            <div class="image-filename">IMG_9114.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/writing_workshop/writing workshop.jpg" alt="writing workshop.jpg">
+          <div class="image-info">
+            <div class="image-number">#82</div>
+            <div class="image-title">Writing Workshop 1</div>
+            <div class="image-filename">writing workshop.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/writing_workshop/writing_workshop1.jpg" alt="writing_workshop1.jpg">
+          <div class="image-info">
+            <div class="image-number">#83</div>
+            <div class="image-title">Writing Workshop 2</div>
+            <div class="image-filename">writing_workshop1.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/writing_workshop/writing_workshop2.jpg" alt="writing_workshop2.jpg">
+          <div class="image-info">
+            <div class="image-number">#84</div>
+            <div class="image-title">Writing Workshop 3</div>
+            <div class="image-filename">writing_workshop2.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/upload_202606/writing_workshop/writing_workshop3.jpg" alt="writing_workshop3.jpg">
+          <div class="image-info">
+            <div class="image-number">#85</div>
+            <div class="image-title">Writing Workshop 4</div>
+            <div class="image-filename">writing_workshop3.jpg</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p class="footer-copy">&copy; 2026 <span class="site-name"></span>. Hosted on GitHub Pages.</p>
+  </footer>
+
+  <script src="js/site-vars.js"></script>
+</body>
+</html>

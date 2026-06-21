@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Images Gallery - Jasmine Zheng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .images-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+    }
+    .image-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .image-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      display: block;
+    }
+    .image-info {
+      padding: 12px;
+      background: #f9f9f9;
+    }
+    .image-number {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .image-title {
+      font-size: 15px;
+      color: #444;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .image-filename {
+      font-size: 14px;
+      color: #666;
+      word-break: break-all;
+    }
+    .section-title {
+      margin: 30px 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="page-hero">
+    <div class="container">
+      <h1>Images Gallery</h1>
+      <p>All photos from images directory</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+
+      <h2 class="section-title">Dance Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/DSC_RichYeePhoto-11.jpg" alt="DSC_RichYeePhoto-11.jpg">
+          <div class="image-info">
+            <div class="image-number">#1</div>
+            <div class="image-title">Dance Performance</div>
+            <div class="image-filename">DSC_RichYeePhoto-11.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/DSC_RichYeePhoto-98.jpg" alt="DSC_RichYeePhoto-98.jpg">
+          <div class="image-info">
+            <div class="image-number">#2</div>
+            <div class="image-title">Dance Performance</div>
+            <div class="image-filename">DSC_RichYeePhoto-98.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/DSC_6019.JPG" alt="DSC_6019.JPG">
+          <div class="image-info">
+            <div class="image-number">#3</div>
+            <div class="image-title">Dance Performance on Stage</div>
+            <div class="image-filename">DSC_6019.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/DSC_7521.JPG" alt="DSC_7521.JPG">
+          <div class="image-info">
+            <div class="image-number">#4</div>
+            <div class="image-title">Dance Performance</div>
+            <div class="image-filename">DSC_7521.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/DSC_7537.JPG" alt="DSC_7537.JPG">
+          <div class="image-info">
+            <div class="image-number">#5</div>
+            <div class="image-title">Dance Performance</div>
+            <div class="image-filename">DSC_7537.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance1.jpg" alt="dance1.jpg">
+          <div class="image-info">
+            <div class="image-number">#6</div>
+            <div class="image-title">Dance</div>
+            <div class="image-filename">dance1.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance2.jpg" alt="dance2.jpg">
+          <div class="image-info">
+            <div class="image-number">#7</div>
+            <div class="image-title">Dance</div>
+            <div class="image-filename">dance2.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance3.jpg" alt="dance3.jpg">
+          <div class="image-info">
+            <div class="image-number">#8</div>
+            <div class="image-title">Dance</div>
+            <div class="image-filename">dance3.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_2023_1.JPG" alt="dance_2023_1.JPG">
+          <div class="image-info">
+            <div class="image-number">#9</div>
+            <div class="image-title">Dance 2023</div>
+            <div class="image-filename">dance_2023_1.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_anaheim_2.JPG" alt="dance_anaheim_2.JPG">
+          <div class="image-info">
+            <div class="image-number">#10</div>
+            <div class="image-title">Dance Anaheim</div>
+            <div class="image-filename">dance_anaheim_2.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_anaheim_3.JPG" alt="dance_anaheim_3.JPG">
+          <div class="image-info">
+            <div class="image-number">#11</div>
+            <div class="image-title">Dance Anaheim</div>
+            <div class="image-filename">dance_anaheim_3.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_anaheim_red.JPG" alt="dance_anaheim_red.JPG">
+          <div class="image-info">
+            <div class="image-number">#12</div>
+            <div class="image-title">Dance Anaheim Red Costume</div>
+            <div class="image-filename">dance_anaheim_red.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_fan1.JPG" alt="dance_fan1.JPG">
+          <div class="image-info">
+            <div class="image-number">#13</div>
+            <div class="image-title">Dance with Fan</div>
+            <div class="image-filename">dance_fan1.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_sfo.JPG" alt="dance_sfo.JPG">
+          <div class="image-info">
+            <div class="image-number">#14</div>
+            <div class="image-title">Dance SFO</div>
+            <div class="image-filename">dance_sfo.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_sfo2.JPG" alt="dance_sfo2.JPG">
+          <div class="image-info">
+            <div class="image-number">#15</div>
+            <div class="image-title">Dance SFO</div>
+            <div class="image-filename">dance_sfo2.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_sfo3.JPG" alt="dance_sfo3.JPG">
+          <div class="image-info">
+            <div class="image-number">#16</div>
+            <div class="image-title">Dance SFO</div>
+            <div class="image-filename">dance_sfo3.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/dance_team.jpeg" alt="dance_team.jpeg">
+          <div class="image-info">
+            <div class="image-number">#17</div>
+            <div class="image-title">Dance Team</div>
+            <div class="image-filename">dance_team.jpeg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Music Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/american_protege_1957.JPG" alt="american_protege_1957.JPG">
+          <div class="image-info">
+            <div class="image-number">#18</div>
+            <div class="image-title">American Protege</div>
+            <div class="image-filename">american_protege_1957.JPG</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/piano_cert.jpg" alt="piano_cert.jpg">
+          <div class="image-info">
+            <div class="image-number">#19</div>
+            <div class="image-title">Piano Certificate</div>
+            <div class="image-filename">piano_cert.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/piano_protege.jpg" alt="piano_protege.jpg">
+          <div class="image-info">
+            <div class="image-number">#20</div>
+            <div class="image-title">Piano Protege</div>
+            <div class="image-filename">piano_protege.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/piano_recital.jpg" alt="piano_recital.jpg">
+          <div class="image-info">
+            <div class="image-number">#21</div>
+            <div class="image-title">Piano Recital</div>
+            <div class="image-filename">piano_recital.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/piano_recital2.jpg" alt="piano_recital2.jpg">
+          <div class="image-info">
+            <div class="image-number">#22</div>
+            <div class="image-title">Piano Recital</div>
+            <div class="image-filename">piano_recital2.jpg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Writing Workshop Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/writing_workshop1.jpg" alt="writing_workshop1.jpg">
+          <div class="image-info">
+            <div class="image-number">#23</div>
+            <div class="image-title">Writing Workshop</div>
+            <div class="image-filename">writing_workshop1.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/writing_workshop2.jpg" alt="writing_workshop2.jpg">
+          <div class="image-info">
+            <div class="image-number">#24</div>
+            <div class="image-title">Writing Workshop</div>
+            <div class="image-filename">writing_workshop2.jpg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Volunteer Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/volunteer_fcsn.jpg" alt="volunteer_fcsn.jpg">
+          <div class="image-info">
+            <div class="image-number">#25</div>
+            <div class="image-title">Volunteer FCSN</div>
+            <div class="image-filename">volunteer_fcsn.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/volunteer_fcsn2.jpeg" alt="volunteer_fcsn2.jpeg">
+          <div class="image-info">
+            <div class="image-number">#26</div>
+            <div class="image-title">Volunteer FCSN</div>
+            <div class="image-filename">volunteer_fcsn2.jpeg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/volunteer_aah.jpeg" alt="volunteer_aah.jpeg">
+          <div class="image-info">
+            <div class="image-number">#27</div>
+            <div class="image-title">Volunteer AAH</div>
+            <div class="image-filename">volunteer_aah.jpeg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/food_truck1.jpg" alt="food_truck1.jpg">
+          <div class="image-info">
+            <div class="image-number">#28</div>
+            <div class="image-title">Food Bank Food Sorting</div>
+            <div class="image-filename">food_truck1.jpg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Sports & Outdoors Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/rock_climbing.jpg" alt="rock_climbing.jpg">
+          <div class="image-info">
+            <div class="image-number">#29</div>
+            <div class="image-title">Rock Climbing</div>
+            <div class="image-filename">rock_climbing.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/rock_climbing1.jpg" alt="rock_climbing1.jpg">
+          <div class="image-info">
+            <div class="image-number">#30</div>
+            <div class="image-title">Rock Climbing</div>
+            <div class="image-filename">rock_climbing1.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/outward_bound1.jpg" alt="outward_bound1.jpg">
+          <div class="image-info">
+            <div class="image-number">#31</div>
+            <div class="image-title">Outward Bound</div>
+            <div class="image-filename">outward_bound1.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/outward_bound2.jpg" alt="outward_bound2.jpg">
+          <div class="image-info">
+            <div class="image-number">#32</div>
+            <div class="image-title">Outward Bound</div>
+            <div class="image-filename">outward_bound2.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/volleyball.jpg" alt="volleyball.jpg">
+          <div class="image-info">
+            <div class="image-number">#33</div>
+            <div class="image-title">Volleyball</div>
+            <div class="image-filename">volleyball.jpg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/volleyball_player.jpg" alt="volleyball_player.jpg">
+          <div class="image-info">
+            <div class="image-number">#34</div>
+            <div class="image-title">Volleyball Player</div>
+            <div class="image-filename">volleyball_player.jpg</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Other Photos</h2>
+      <div class="images-gallery">
+        <div class="image-item">
+          <img src="images/jasmine_2025.jpeg" alt="jasmine_2025.jpeg">
+          <div class="image-info">
+            <div class="image-number">#35</div>
+            <div class="image-title">Jasmine 2025</div>
+            <div class="image-filename">jasmine_2025.jpeg</div>
+          </div>
+        </div>
+        <div class="image-item">
+          <img src="images/summer_stanford.jpg" alt="summer_stanford.jpg">
+          <div class="image-info">
+            <div class="image-number">#36</div>
+            <div class="image-title">Summer Stanford</div>
+            <div class="image-filename">summer_stanford.jpg</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p class="footer-copy">&copy; 2026 <span class="site-name"></span>. Hosted on GitHub Pages.</p>
+  </footer>
+
+  <script src="js/site-vars.js"></script>
+</body>
+</html>
