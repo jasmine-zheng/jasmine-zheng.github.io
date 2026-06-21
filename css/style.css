@@ -74,7 +74,7 @@ h1, h2, h3, h4 {
   top: 0;
   left: 0;
   right: 0;
-  height: var(--nav-height);
+  height: 100px;
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -146,7 +146,7 @@ h1, h2, h3, h4 {
 
 /* --- Hero / Carousel Section --- */
 .hero {
-  margin-top: var(--nav-height);
+  margin-top: 100px;
   position: relative;
   background: var(--bg-light);
   overflow: hidden;
