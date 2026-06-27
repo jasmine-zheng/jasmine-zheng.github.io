@@ -99,6 +99,7 @@ h1, h2, h3, h4 {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--primary);
+  margin-left: -20px;
 }
 
 .nav-brand:hover {
@@ -822,6 +823,7 @@ h1, h2, h3, h4 {
   cursor: pointer;
   transition: all 0.2s;
   text-decoration: none;
+  font-family: var(--font-sans);
 }
 
 .tab-btn:hover {
@@ -840,5 +842,125 @@ h1, h2, h3, h4 {
 /* Offset for sticky navbar */
 .content-block {
   scroll-margin-top: 80px;
+}
+
+/* Page-specific tab button colors with gradients */
+.writing-page .tab-btn,
+.writing-page a.tab-btn {
+  background: linear-gradient(to bottom, #0e2a4a 0%, #5a1e6a 100%);
+  color: #fff;
+  border: none;
+}
+
+.writing-page .tab-btn:hover,
+.writing-page a.tab-btn:hover {
+  background: linear-gradient(to bottom, #1a3a5a 0%, #6a2e7a 100%);
+}
+
+.writing-page .tab-btn.active,
+.writing-page a.tab-btn.active {
+  background: linear-gradient(to bottom, #051a35 0%, #4a0e5a 100%);
+}
+
+.neuroscience-page .tab-btn,
+.neuroscience-page a.tab-btn {
+  background: linear-gradient(to bottom, #0a3a6a 0%, #3a8aaa 100%);
+  color: #fff;
+  border: none;
+}
+
+.neuroscience-page .tab-btn:hover,
+.neuroscience-page a.tab-btn:hover {
+  background: linear-gradient(to bottom, #1a4a7a 0%, #4a9aba 100%);
+}
+
+.neuroscience-page .tab-btn.active,
+.neuroscience-page a.tab-btn.active {
+  background: linear-gradient(to bottom, #002a5a 0%, #2a7a9a 100%);
+}
+
+.community-page .tab-btn,
+.community-page a.tab-btn {
+  background: linear-gradient(to bottom, #a899b9 0%, #e4d4f4 100%);
+  color: #4a3a5a;
+  border: none;
+}
+
+.community-page .tab-btn:hover,
+.community-page a.tab-btn:hover {
+  background: linear-gradient(to bottom, #b8a9c9 0%, #f4e4ff 100%);
+}
+
+.community-page .tab-btn.active,
+.community-page a.tab-btn.active {
+  background: linear-gradient(to bottom, #9889a9 0%, #d4c4e4 100%);
+}
+
+.dance-page .tab-btn,
+.dance-page a.tab-btn {
+  background: linear-gradient(to bottom, #d86a6a 0%, #ffb0b0 100%);
+  color: #5a2a2a;
+  border: none;
+}
+
+.dance-page .tab-btn:hover,
+.dance-page a.tab-btn:hover {
+  background: linear-gradient(to bottom, #e87a7a 0%, #ffc0c0 100%);
+}
+
+.dance-page .tab-btn.active,
+.dance-page a.tab-btn.active {
+  background: linear-gradient(to bottom, #c85a5a 0%, #f0a0a0 100%);
+}
+
+.music-page .tab-btn,
+.music-page a.tab-btn {
+  background: linear-gradient(to bottom, #b46a6a 0%, #e4aaaa 100%);
+  color: #5a2a2a;
+  border: none;
+}
+
+.music-page .tab-btn:hover,
+.music-page a.tab-btn:hover {
+  background: linear-gradient(to bottom, #c47a7a 0%, #f4baba 100%);
+}
+
+.music-page .tab-btn.active,
+.music-page a.tab-btn.active {
+  background: linear-gradient(to bottom, #a45a5a 0%, #d49a9a 100%);
+}
+
+.sports-page .tab-btn,
+.sports-page a.tab-btn {
+  background: linear-gradient(to bottom, #1a5a4a 0%, #5a9a8a 100%);
+  color: #fff;
+  border: none;
+}
+
+.sports-page .tab-btn:hover,
+.sports-page a.tab-btn:hover {
+  background: linear-gradient(to bottom, #2a6a5a 0%, #6aaa9a 100%);
+}
+
+.sports-page .tab-btn.active,
+.sports-page a.tab-btn.active {
+  background: linear-gradient(to bottom, #0a4a3a 0%, #4a8a7a 100%);
+}
+
+.blog-page .tab-btn,
+.blog-page button.tab-btn {
+  background: linear-gradient(to bottom, #b9a8c4 0%, #f4e4ff 100%);
+  color: #4a3a5a;
+  border: none;
+}
+
+.blog-page .tab-btn:hover,
+.blog-page button.tab-btn:hover {
+  background: linear-gradient(to bottom, #c9b8d4 0%, #fff4ff 100%);
+}
+
+.blog-page .tab-btn.active,
+.blog-page button.tab-btn.active {
+  background: linear-gradient(to bottom, #a998b4 0%, #e4d4f0 100%);
 }
 

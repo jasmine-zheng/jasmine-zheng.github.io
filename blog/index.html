@@ -9,12 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
+<body class="blog-page">
 
   <!-- Navigation -->
   <nav class="navbar">
     <div class="container">
-      <a href="../index.html" class="nav-brand site-name"></a>
+      <a href="../index.html" class="nav-brand">
+        <img src="../images/upload_202606/title.jpg" alt="Jasmine Zheng" style="height: 130px; width: auto;">
+      </a>
       <button class="nav-toggle" aria-label="Toggle navigation">
         <span></span><span></span><span></span>
       </button>
@@ -41,12 +43,12 @@
   <!-- Blog Filter Tags -->
   <section class="section">
     <div class="container">
-      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px;margin-top: -18px">
-        <button class="btn btn-outline blog-filter active" data-filter="all">All</button>
-        <button class="btn btn-outline blog-filter" data-filter="writing">Writing</button>
-        <button class="btn btn-outline blog-filter" data-filter="travel">Travel</button>
-        <button class="btn btn-outline blog-filter" data-filter="volunteer">Volunteer</button>
-        <button class="btn btn-outline blog-filter" data-filter="links">Links</button>
+      <div class="tabs-container" style="margin-top: -18px">
+        <button class="tab-btn blog-filter active" data-filter="all">All</button>
+        <button class="tab-btn blog-filter" data-filter="writing">Writing</button>
+        <button class="tab-btn blog-filter" data-filter="travel">Travel</button>
+        <button class="tab-btn blog-filter" data-filter="volunteer">Volunteer</button>
+        <button class="tab-btn blog-filter" data-filter="links">Links</button>
       </div>
 
       <div class="blog-list">
