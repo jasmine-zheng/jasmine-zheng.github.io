@@ -1,0 +1,22 @@
+zhengyaxin@iMac jasmine-zheng.github.io % git diff index.html 
+diff --cc index.html
+index 6851214,ec7144f..0000000
+--- a/index.html
++++ b/index.html
+@@@ -40,9 -40,9 +40,15 @@@
+      <div class="swiper hero-carousel">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" style="background-color: #f8f9fa;">
+++<<<<<<< HEAD
+ +          <img src="images/upload_202606/front_page/front_1.PNG" alt="Jasmine Zheng" style="width:33.33%;object-fit:cover;object-position:center 40%">
+ +          <img src="images/upload_202606/front_page/front_2.PNG" alt="Jasmine Zheng" style="width:33.33%;object-fit:cover;object-position:center 40%">
+ +          <img src="images/upload_202606/front_page/front_3.PNG" alt="Jasmine Zheng" style="width:33.33%;object-fit:cover;object-position:center 40%">
+++=======
++           <img src="images/upload_202606/front_page/front_1.PNG" alt="Jasmine Zheng" style="width:25%;height:100%;object-fit:cover;">
++           <img src="images/upload_202606/front_page/front_2.PNG" alt="Jasmine Zheng" style="width:25%;height:100%;object-fit:cover;">
++           <img src="images/upload_202606/front_page/front_3.PNG" alt="Jasmine Zheng" style="width:25%;height:100%;object-fit:cover;">
+++>>>>>>> 3131ea4 (adjust carousel image positioning to prevent head cropping)
+            <div class="slide-overlay">
+            </div>
+          </div>
+
