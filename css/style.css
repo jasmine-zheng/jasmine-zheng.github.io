@@ -968,18 +968,18 @@ h1, h2, h3, h4 {
 
 .art-page .tab-btn,
 .art-page a.tab-btn {
-  background: linear-gradient(to right, #ff6b9d 0%, #ffa500 50%, #9b59b6 100%);
+  background: linear-gradient(to bottom, #ff6b9d 0%, #ffa500 50%, #9b59b6 100%);
   color: #fff;
   border: none;
 }
 
 .art-page .tab-btn:hover,
 .art-page a.tab-btn:hover {
-  background: linear-gradient(to right, #ff7ba8 0%, #ffb733 50%, #a869c7 100%);
+  background: linear-gradient(to bottom, #ff7ba8 0%, #ffb733 50%, #a869c7 100%);
 }
 
 .art-page .tab-btn.active,
 .art-page a.tab-btn.active {
-  background: linear-gradient(to right, #ff5b8d 0%, #ff9500 50%, #8b49a6 100%);
+  background: linear-gradient(to bottom, #ff5b8d 0%, #ff9500 50%, #8b49a6 100%);
 }
 
