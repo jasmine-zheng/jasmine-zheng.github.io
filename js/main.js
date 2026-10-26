@@ -89,6 +89,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Tab links - scroll with offset for fixed navbar
+  const scrollOffset = 120;
+  function scrollToHash(hash, smooth) {
+    const target = document.querySelector(hash);
+    if (target) {
+      const targetPos = target.getBoundingClientRect().top + window.scrollY - scrollOffset;
+      window.scrollTo({ top: targetPos, behavior: smooth ? 'smooth' : 'auto' });
+    }
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      const href = tab.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        history.pushState(null, '', href);
+        scrollToHash(href, true);
+      }
+    });
+  });
+
+  // Correct native hash scrolling after the browser restores the URL fragment.
+  if (window.location.hash) {
+    const correctInitialHashPosition = () => {
+      const hash = window.location.hash;
+      [0, 100, 300, 700].forEach(delay => {
+        setTimeout(() => scrollToHash(hash, false), delay);
+      });
+    };
+
+    if (document.readyState === 'complete') {
+      correctInitialHashPosition();
+    } else {
+      window.addEventListener('load', correctInitialHashPosition, { once: true });
+    }
+  }
+
   // Mark active nav link
   const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
   document.querySelectorAll('.nav-links a').forEach(link => {

@@ -451,6 +451,11 @@ h1, h2, h3, h4 {
   margin-bottom: 48px;
 }
 
+.writing-page .content-block[id],
+.neuroscience-page .content-block[id] {
+  scroll-margin-top: 120px;
+}
+
 .page-content .content-block h2 {
   font-size: 1.6rem;
   margin-bottom: 16px;
@@ -845,11 +850,6 @@ h1, h2, h3, h4 {
 }
 
 
-/* Offset for sticky navbar */
-.content-block {
-  scroll-margin-top: 80px;
-}
-
 /* Page-specific tab button colors with gradients */
 .writing-page .tab-btn,
 .writing-page a.tab-btn {
@@ -986,4 +986,3 @@ h1, h2, h3, h4 {
 .art-page a.tab-btn.active {
   background: linear-gradient(to bottom, #ff5b8d 0%, #ff9500 50%, #8b49a6 100%);
 }
-
