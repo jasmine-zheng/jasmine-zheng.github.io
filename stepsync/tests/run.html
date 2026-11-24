@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StepSync tests</title>
+  <!-- Runs the node:test files in a browser (no Node needed). Also runnable with: node --test stepsync/tests/ -->
+  <script type="importmap">
+    { "imports": { "node:test": "./shim-test.js", "node:assert/strict": "./shim-assert.js" } }
+  </script>
+  <style>body { font: 14px/1.5 monospace; padding: 20px; } .pass { color: green; } .fail { color: #c00; }</style>
+</head>
+<body>
+  <pre id="out">running...</pre>
+  <script type="module">
+    import { run } from './shim-test.js';
+    await import('./pose.test.mjs');
+    const results = await run();
+    const fails = results.filter(r => !r.ok);
+    document.getElementById('out').innerHTML = results
+      .map(r => `<span class="${r.ok ? 'pass' : 'fail'}">${r.ok ? 'ok  ' : 'FAIL'} ${r.name}${r.ok ? '' : '\n     ' + r.error}</span>`)
+      .join('\n') + `\n\n<b id="summary">${results.length - fails.length}/${results.length} passed</b>`;
+  </script>
+</body>
+</html>
