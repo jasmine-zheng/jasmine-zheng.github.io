@@ -22,11 +22,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # Upload in its own job so the artifact has finished registering before the deploy job looks it up.
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,6 +35,32 @@ jobs:
         with:
           # Upload entire repository
           path: '.'
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url || steps.retry1.outputs.page_url || steps.retry2.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # deploy-pages can briefly fail to see a just-uploaded artifact (actions/deploy-pages#451),
+      # so retry after a pause instead of re-running the workflow (a re-run uploads a duplicate artifact).
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+      - name: Wait before retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+      - name: Deploy to GitHub Pages (retry 1)
+        id: retry1
+        if: steps.deployment.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+      - name: Wait before final retry
+        if: steps.deployment.outcome == 'failure' && steps.retry1.outcome == 'failure'
+        run: sleep 60
+      - name: Deploy to GitHub Pages (retry 2)
+        id: retry2
+        if: steps.deployment.outcome == 'failure' && steps.retry1.outcome == 'failure'
         uses: actions/deploy-pages@v5
