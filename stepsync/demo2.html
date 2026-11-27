@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepSync - Character view demo | Jasmine Zheng</title>
+  <link rel="icon" type="image/png" href="../images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="stepsync.css">
+</head>
+<body class="demo-page">
+  <header class="topbar">
+    <a class="back" href="index.html">&larr; Back to StepSync</a>
+    <div class="logo">Step<span>Sync</span></div>
+    <span class="chip demo-badge">Demo</span>
+  </header>
+
+  <main>
+    <div class="demo-intro">
+      <h1>What "Show me as a character" looks like</h1>
+      <p>A still picture of the dance screen; no camera is used here. Instead of your video, a glowing hologram copies your moves,
+        so screenshots never show the real you. Matching body parts glow blue. Dashed lines show where each limb should
+        point: here the forearm on the left is a little off (orange), and the circle marks where it should go.</p>
+    </div>
+
+    <section class="screen active" aria-label="Example of the dance screen">
+      <div class="hud">
+        <div class="move-label">Airplane glide!</div>
+        <div class="hud-right">
+          <div class="score"><b>24</b><small>points</small></div>
+          <div class="combo">4x combo!</div>
+        </div>
+      </div>
+      <div class="stage demo-stage">
+        <div class="panel dancer-panel">
+          <canvas id="dancerCanvas"></canvas>
+          <div class="panel-tag">Dance buddy: Nova</div>
+        </div>
+        <div class="panel cam-panel">
+          <canvas id="camCanvas"></canvas>
+          <div class="panel-tag">You (as a character)</div>
+          <div class="meter"><div style="height:82%"></div></div>
+        </div>
+      </div>
+      <div class="progress"><div style="width:45%"></div></div>
+    </section>
+
+    <div class="play-row demo-row"><a class="big-btn demo-btn" href="index.html">Try it yourself</a></div>
+  </main>
+
+  <script type="module">
+    import { POSES } from './js/routines.js';
+    import { drawDancer, skeleton } from './js/dancer.js';
+    import { createAvatar, drawAvatar } from './js/avatar.js';
+    import { fromLandmarks, compare } from './js/pose.js';
+
+    // "Airplane Glide" (same as pose 2 on characters.html).
+    const target = { ...POSES.rest, ...POSES.airplaneL, thL: -24, shL: -24, thR: 6, shR: 4 };
+    // The pretend dancer copies the move, except the forearm on the left is about 30 degrees off.
+    const you = { ...target, faL: target.faL - 30 };
+    const JOINTS = { 11: 'sL', 12: 'sR', 13: 'eL', 14: 'eR', 15: 'wL', 16: 'wR', 23: 'hL', 24: 'hR', 25: 'kL', 26: 'kR', 27: 'aL', 28: 'aR', 0: 'headC' };
+
+    // Made-up body points (mirrored, 0..1), scaled and centred to fit a canvas of w x h pixels.
+    function landmarks(w, h) {
+      const { j, P } = skeleton(you, 1, 0.78);
+      const pts = Object.values(JOINTS).map(k => j[k]);
+      const minX = Math.min(...pts.map(p => p.x)), maxX = Math.max(...pts.map(p => p.x));
+      const minY = Math.min(...pts.map(p => p.y)) - P.head, maxY = Math.max(...pts.map(p => p.y));
+      const k = Math.min((h * 0.72) / (maxY - minY), (w * 0.8) / (maxX - minX));
+      const ox = w / 2 - ((minX + maxX) / 2) * k, oy = h * 0.52 - ((minY + maxY) / 2) * k;
+      const lms = Array.from({ length: 33 }, () => ({ x: 0.5, y: 0.5, visibility: 0 }));
+      for (const [i, key] of Object.entries(JOINTS)) lms[i] = { x: (ox + j[key].x * k) / w, y: (oy + j[key].y * k) / h, visibility: 1 };
+      return lms;
+    }
+
+    function fit(canvas) {
+      const dpr = devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w, h };
+    }
+
+    function draw() {
+      const c = fit(document.getElementById('camCanvas'));
+      const lms = landmarks(c.w, c.h);
+      const scores = compare(fromLandmarks(lms, c.w / c.h), target).segments;
+      drawAvatar(c.ctx, c.w, c.h, lms, scores, createAvatar(), { target });
+      const d = fit(document.getElementById('dancerCanvas'));
+      drawDancer(d.ctx, target, {
+        cx: d.w / 2, groundY: d.h * 0.93, height: Math.min(d.h * 0.82, d.w * 1.15), character: 'nova', mood: 'cheer', glow: scores,
+      });
+    }
+    draw();
+    addEventListener('resize', draw);
+    document.fonts?.ready.then(draw);
+  </script>
+</body>
+</html>

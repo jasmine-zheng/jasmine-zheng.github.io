@@ -124,6 +124,21 @@ main { max-width: 1200px; margin: 0 auto; padding: 0 24px 32px; }
 }
 .big-btn:hover { transform: translateY(-2px); }
 .big-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 #d9466f; }
+.demo-link { text-align: center; margin-top: 22px; }
+.demo-link a { color: var(--ink-soft); font-weight: 600; }
+.demo-link a:hover { color: var(--pink); }
+.demo-intro { max-width: 820px; margin: 0 auto 14px; text-align: center; }
+.demo-intro h1 { font-family: var(--font-fun); font-size: 1.6rem; margin-bottom: 6px; }
+.demo-intro p { color: var(--ink-soft); line-height: 1.5; font-size: 0.95rem; }
+.demo-page main { max-width: 1000px; }
+.demo-page .move-label { font-size: 1.6rem; padding: 6px 22px; min-width: 0; }
+.demo-page .score b { font-size: 1.4rem; }
+.demo-page .demo-stage { height: calc(100vh - 390px); min-height: 280px; max-height: 520px; }
+.demo-page .progress { margin-top: 12px; }
+.demo-page .demo-row { margin-top: 18px; }
+.demo-page .big-btn { font-size: 1.2rem; padding: 12px 36px; }
+.demo-btn { display: inline-block; text-decoration: none; }
+.demo-badge { background: var(--purple); color: #fff; }
 .big-btn.alt { background: linear-gradient(135deg, var(--blue), var(--purple)); box-shadow: 0 10px 0 #3a73c4, 0 16px 30px rgba(84, 160, 255, 0.35); }
 
 /* Play screen */

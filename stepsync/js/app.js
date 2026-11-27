@@ -3,6 +3,7 @@ import { POSES, ROUTINES, MUSIC } from './routines.js';
 import { CHARACTERS, drawDancer } from './dancer.js';
 import { BeatBox } from './audio.js';
 import { Tracker } from './tracker.js';
+import { createAvatar, drawAvatar, segColor } from './avatar.js';
 
 const $ = id => document.getElementById(id);
 const routines = ROUTINES.map(r => buildRoutine(r, POSES));
@@ -251,12 +252,17 @@ function finishMove(idx) {
   if (points === 3 || game.combo % 3 === 0) { confetti(points === 3 ? 60 : 30); game.cheerUntil = performance.now() + 900; }
 }
 
-function drawCamera(canvas, lms, segScores) {
+const avatars = new WeakMap();
+
+function drawCamera(canvas, lms, segScores, target = null) {
   const v = $('video');
   const vw = v.videoWidth || 640, vh = v.videoHeight || 480;
   if (canvas.width !== vw || canvas.height !== vh) { canvas.width = vw; canvas.height = vh; }
   const ctx = canvas.getContext('2d');
-  if (settings.avatar) return drawAvatar(ctx, vw, vh, lms, segScores);
+  if (settings.avatar) {
+    if (!avatars.has(canvas)) avatars.set(canvas, createAvatar());
+    return drawAvatar(ctx, vw, vh, lms, segScores, avatars.get(canvas), { target });
+  }
   ctx.save(); ctx.translate(vw, 0); ctx.scale(-1, 1); ctx.drawImage(v, 0, 0, vw, vh); ctx.restore();
   ctx.fillStyle = 'rgba(45,48,71,0.15)'; ctx.fillRect(0, 0, vw, vh);
   if (!lms) return;
@@ -285,44 +291,6 @@ const landmarkPoints = (lms, vw, vh) => {
   const P = i => ({ x: lms[i].x * vw, y: lms[i].y * vh });
   return { P, mid: (a, b) => ({ x: (P(a).x + P(b).x) / 2, y: (P(a).y + P(b).y) / 2 }) };
 };
-const segColor = (s, base) => (s == null ? base : s >= 0.75 ? '#1dd1a1' : s >= 0.4 ? '#feca57' : base);
-
-// Privacy mode: never draw camera pixels, only a faceless character that follows the tracked body.
-function drawAvatar(ctx, vw, vh, lms, segScores) {
-  const bg = ctx.createLinearGradient(0, 0, 0, vh);
-  bg.addColorStop(0, '#3a3f6b'); bg.addColorStop(1, '#2d3047');
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, vw, vh);
-  if (!lms) return;
-  const { P, mid } = landmarkPoints(lms, vw, vh);
-  const vis = i => (lms[i].visibility ?? 1) >= 0.5;
-  const sh = Math.max(20, Math.hypot(P(11).x - P(12).x, P(11).y - P(12).y));
-  const base = '#a29bfe', outline = '#1e1b2e';
-  const stroke = (p, q, w, color) => {
-    ctx.lineWidth = w + 6; ctx.strokeStyle = outline;
-    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
-    ctx.lineWidth = w; ctx.strokeStyle = color;
-    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
-  };
-  const dot = (c, r, color) => {
-    ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
-    ctx.fillStyle = color; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = outline; ctx.stroke();
-  };
-  ctx.lineCap = 'round';
-  for (const [key, [a, b]] of Object.entries(SEGMENTS)) {
-    const ends = [a, b].flat();
-    if (key === 'torso' || !ends.every(vis)) continue;
-    const p = Array.isArray(a) ? mid(...a) : P(a), q = Array.isArray(b) ? mid(...b) : P(b);
-    stroke(p, q, sh * 0.3, segColor(segScores[key], base));
-  }
-  if ([11, 12, 23, 24].every(vis)) stroke(mid(11, 12), mid(23, 24), sh * 0.85, segColor(segScores.torso, '#6c5ce7'));
-  for (const i of [15, 16]) if (vis(i)) dot(P(i), sh * 0.13, '#dfe6e9');
-  for (const i of [27, 28]) if (vis(i)) dot(P(i), sh * 0.14, '#ff6b9a');
-  const neck = mid(11, 12), nose = P(0);
-  const up = { x: nose.x - neck.x, y: nose.y - neck.y }, len = Math.hypot(up.x, up.y) || 1;
-  const r = sh * 0.38;
-  dot({ x: neck.x + (up.x / len) * Math.max(len, r * 1.3), y: neck.y + (up.y / len) * Math.max(len, r * 1.3) }, r, '#ffeaa7');
-}
-
 function playFrame() {
   const g = game, r = g.routine;
   const beat = audio.beat;
@@ -364,7 +332,7 @@ function playFrame() {
     } else g.smooth *= 0.9;
     $('camHint').classList.toggle('show', performance.now() - g.lastSeen > 1500);
     $('meterFill').style.height = `${Math.round(g.smooth * 100)}%`;
-    drawCamera($('camCanvas'), lms, segScores);
+    drawCamera($('camCanvas'), lms, segScores, target);
 
     // Judge each move in a window that lags the beat a little (kids react after seeing the move).
     const jb = beat - 0.3;

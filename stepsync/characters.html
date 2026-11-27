@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepSync - Camera character styles | Jasmine Zheng</title>
+  <link rel="icon" type="image/png" href="../images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="stepsync.css">
+  <style>
+    .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1200px; margin: 0 auto; }
+    .styles figure { margin: 0; }
+    .styles .panel { aspect-ratio: 3 / 4; max-height: calc(100vh - 170px); width: 100%; }
+    .styles canvas { width: 100%; height: 100%; display: block; }
+    .styles + h2, main > h2 { font-family: var(--font-fun); font-size: 1.3rem; text-align: center; margin: 6px 0 12px; }
+    .styles + h2 { margin-top: 34px; }
+    .styles figcaption { text-align: center; margin-top: 10px; font-family: var(--font-fun); font-weight: 600; font-size: 1.2rem; }
+    @media (max-width: 820px) { .styles { grid-template-columns: 1fr; max-width: 420px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="index.html">&larr; Back to StepSync</a>
+    <div class="logo">Step<span>Sync</span></div>
+    <span class="chip demo-badge">Styles</span>
+  </header>
+  <main>
+    <h2>Hologram poses for the demo</h2>
+    <div class="styles">
+      <figure><div class="panel cam-panel"><canvas data-pose="disco"></canvas></div><figcaption>1 &middot; Disco Point</figcaption></figure>
+      <figure><div class="panel cam-panel"><canvas data-pose="airplane"></canvas></div><figcaption>2 &middot; Airplane Glide</figcaption></figure>
+      <figure><div class="panel cam-panel"><canvas data-pose="kick"></canvas></div><figcaption>3 &middot; Victory Kick</figcaption></figure>
+    </div>
+    <h2>Earlier style options</h2>
+    <div class="styles">
+      <figure><div class="panel"><canvas data-style="smiley"></canvas></div><figcaption>A &middot; Smiley</figcaption></figure>
+      <figure><div class="panel"><canvas data-style="beads"></canvas></div><figcaption>B &middot; Bead Party</figcaption></figure>
+      <figure><div class="panel"><canvas data-style="holo"></canvas></div><figcaption>C &middot; Hologram</figcaption></figure>
+    </div>
+  </main>
+
+  <script type="module">
+    import { POSES } from './js/routines.js';
+    import { skeleton } from './js/dancer.js';
+    import { createAvatar, drawAvatar } from './js/avatar.js';
+    import { fromLandmarks, compare } from './js/pose.js';
+
+    // Same pretend dancer as the demo: the "Star!" move with the right forearm a little off.
+    const target = { ...POSES.rest, ...POSES.star };
+    const you = { ...target, faR: target.faR - 30 };
+    const scores = { torso: 1, uaL: 1, faL: 1, uaR: 1, faR: 0.5, thL: 1, shL: 1, thR: 1, shR: 1 };
+    const LIMBS = { uaL: ['sL', 'eL'], faL: ['eL', 'wL'], uaR: ['sR', 'eR'], faR: ['eR', 'wR'], thL: ['hL', 'kL'], shL: ['kL', 'aL'], thR: ['hR', 'kR'], shR: ['kR', 'aR'] };
+
+    const mid = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+    const len = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+    const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+
+    function body(w, h) {
+      const H = Math.min(h * 0.8, w * 1.05), { j } = skeleton(you, H, 0.78), o = { x: w / 2, y: h * 0.6 };
+      const J = Object.fromEntries(Object.entries(j).map(([k, p]) => [k, { x: o.x + p.x, y: o.y + p.y }]));
+      J.neck = mid(J.sL, J.sR); J.hips = mid(J.hL, J.hR);
+      const sh = len(J.sL, J.sR), up = { x: (J.neck.x - J.hips.x) / len(J.hips, J.neck), y: (J.neck.y - J.hips.y) / len(J.hips, J.neck) };
+      J.head = { x: J.neck.x + up.x * sh * 0.62, y: J.neck.y + up.y * sh * 0.62 };
+      return { J, sh, up };
+    }
+    // Where a limb should end if it pointed like the buddy's.
+    const guideEnd = (J, key) => {
+      const [a, b] = LIMBS[key], r = (target[key] * Math.PI) / 180, l = len(J[a], J[b]);
+      return { x: J[a].x + Math.sin(r) * l, y: J[a].y + Math.cos(r) * l };
+    };
+    const line = (ctx, a, b, wdt, color) => { ctx.lineWidth = wdt; ctx.strokeStyle = color; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); };
+    const disc = (ctx, c, r, fill, stroke, sw = 3) => { ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.lineWidth = sw; ctx.strokeStyle = stroke; ctx.stroke(); } };
+
+    // A: soft, rounded, smiling friend.
+    function smiley(ctx, w, h) {
+      const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#bfe9ff'); g.addColorStop(1, '#fff1f7');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      for (const [x, y, r] of [[0.18, 0.12, 0.07], [0.27, 0.11, 0.05], [0.8, 0.2, 0.06], [0.88, 0.19, 0.04]]) disc(ctx, { x: x * w, y: y * h }, r * w);
+      const { J, sh } = body(w, h), o = '#5a3d5c';
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.globalAlpha = 0.15; ctx.beginPath(); ctx.ellipse(J.hips.x, Math.max(J.aL.y, J.aR.y) + sh * 0.12, sh * 0.9, sh * 0.12, 0, 0, Math.PI * 2); ctx.fillStyle = '#000'; ctx.fill(); ctx.globalAlpha = 1;
+      const col = k => (scores[k] >= 0.75 ? '#55efc4' : '#ffd166');
+      for (const k of ['thL', 'shL', 'thR', 'shR', 'uaL', 'faL', 'uaR', 'faR']) { const [a, b] = LIMBS[k]; line(ctx, J[a], J[b], sh * 0.36 + 6, o); }
+      for (const k of ['thL', 'shL', 'thR', 'shR', 'uaL', 'faL', 'uaR', 'faR']) { const [a, b] = LIMBS[k]; line(ctx, J[a], J[b], sh * 0.36, col(k)); }
+      for (const a of [J.aL, J.aR]) { ctx.beginPath(); ctx.ellipse(a.x, a.y, sh * 0.22, sh * 0.15, 0, 0, Math.PI * 2); ctx.fillStyle = '#ff8fab'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke(); }
+      for (const wr of [J.wL, J.wR]) disc(ctx, wr, sh * 0.17, '#fff', o);
+      ctx.beginPath(); ctx.ellipse(mid(J.neck, J.hips).x, mid(J.neck, J.hips).y, sh * 0.58, len(J.neck, J.hips) * 0.62, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#55efc4'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      disc(ctx, mid(J.neck, J.hips), sh * 0.18, 'rgba(255,255,255,0.5)');
+      const hr = sh * 0.58, hc = { x: J.head.x, y: J.head.y - sh * 0.08 };
+      disc(ctx, hc, hr, '#ffe08a', o);
+      for (const s of [-1, 1]) {
+        disc(ctx, { x: hc.x + s * hr * 0.38, y: hc.y - hr * 0.12 }, hr * 0.13, '#3d2c3e');
+        disc(ctx, { x: hc.x + s * hr * 0.38 + hr * 0.04, y: hc.y - hr * 0.17 }, hr * 0.045, '#fff');
+        disc(ctx, { x: hc.x + s * hr * 0.62, y: hc.y + hr * 0.22 }, hr * 0.14, 'rgba(255,107,129,0.45)');
+      }
+      ctx.beginPath(); ctx.arc(hc.x, hc.y + hr * 0.1, hr * 0.42, 0.12 * Math.PI, 0.88 * Math.PI); ctx.closePath();
+      ctx.fillStyle = '#e8505b'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      ctx.save(); ctx.setLineDash([sh * 0.1, sh * 0.08]); const e = guideEnd(J, 'faR');
+      line(ctx, J.eR, e, sh * 0.07, '#ffffff'); ctx.setLineDash([]); disc(ctx, e, sh * 0.12, null, '#ff8fab', sh * 0.06);
+      ctx.restore();
+    }
+
+    // B: limbs made of rainbow beads, sunglasses and a party hat, confetti all around.
+    function beads(ctx, w, h) {
+      ctx.fillStyle = '#ffe9a8'; ctx.fillRect(0, 0, w, h);
+      let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      const conf = ['#ff6b9a', '#54a0ff', '#1dd1a1', '#a55eea', '#ff9f43'];
+      for (let i = 0; i < 60; i++) { ctx.save(); ctx.translate(rnd() * w, rnd() * h); ctx.rotate(rnd() * 3); ctx.fillStyle = conf[i % 5]; ctx.globalAlpha = 0.5; ctx.fillRect(-6, -3, 12, 6); ctx.restore(); }
+      const { J, sh, up } = body(w, h), o = '#2d3047';
+      const rainbow = ['#ff6b6b', '#ff9f43', '#feca57', '#1dd1a1', '#54a0ff', '#a55eea'];
+      const chain = (a, b, r, k, colors) => {
+        const n = Math.max(3, Math.round(len(a, b) / (r * 1.5)));
+        for (let i = 0; i <= n; i++) disc(ctx, lerp(a, b, i / n), r, colors[(i + k) % colors.length], o, 2.5);
+      };
+      let k = 0;
+      for (const key of ['thL', 'shL', 'thR', 'shR', 'uaL', 'faL', 'uaR', 'faR']) {
+        const [a, b] = LIMBS[key];
+        chain(J[a], J[b], sh * 0.13, k += 2, scores[key] >= 0.75 ? rainbow : ['#fff3b0', '#ffd166']);
+      }
+      for (const a of [J.aL, J.aR]) { ctx.beginPath(); ctx.roundRect(a.x - sh * 0.24, a.y - sh * 0.1, sh * 0.48, sh * 0.22, sh * 0.1); ctx.fillStyle = '#2d3047'; ctx.fill(); }
+      for (const wr of [J.wL, J.wR]) { for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; disc(ctx, { x: wr.x + Math.cos(a) * sh * 0.14, y: wr.y + Math.sin(a) * sh * 0.14 }, sh * 0.08, '#ff6b9a', o, 2); } disc(ctx, wr, sh * 0.09, '#feca57', o, 2); }
+      const tc = mid(J.neck, J.hips);
+      ctx.beginPath(); ctx.roundRect(tc.x - sh * 0.5, J.neck.y - sh * 0.05, sh, len(J.neck, J.hips) + sh * 0.1, sh * 0.2);
+      ctx.fillStyle = '#54a0ff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      ctx.save(); ctx.clip();
+      for (let y = J.neck.y; y < J.hips.y + sh; y += sh * 0.22) { ctx.fillStyle = '#fff'; ctx.globalAlpha = 0.35; ctx.fillRect(tc.x - sh, y, sh * 2, sh * 0.09); }
+      ctx.restore();
+      chain(J.neck, { x: J.neck.x + up.x * sh * 0.25, y: J.neck.y + up.y * sh * 0.25 }, sh * 0.08, 0, ['#feca57']);
+      const hr = sh * 0.48, hc = J.head;
+      for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2; ctx.beginPath(); ctx.moveTo(hc.x + Math.cos(a) * hr * 0.9, hc.y + Math.sin(a) * hr * 0.9); ctx.lineTo(hc.x + Math.cos(a + 0.22) * hr * 1.35, hc.y + Math.sin(a + 0.22) * hr * 1.35); ctx.lineTo(hc.x + Math.cos(a + 0.45) * hr * 0.9, hc.y + Math.sin(a + 0.45) * hr * 0.9); ctx.fillStyle = '#ff9f43'; ctx.fill(); }
+      disc(ctx, hc, hr, '#feca57', o);
+      ctx.beginPath(); ctx.roundRect(hc.x - hr * 0.82, hc.y - hr * 0.3, hr * 0.72, hr * 0.42, hr * 0.18); ctx.roundRect(hc.x + hr * 0.1, hc.y - hr * 0.3, hr * 0.72, hr * 0.42, hr * 0.18);
+      ctx.fillStyle = '#2d3047'; ctx.fill();
+      line(ctx, { x: hc.x - hr * 0.12, y: hc.y - hr * 0.16 }, { x: hc.x + hr * 0.12, y: hc.y - hr * 0.16 }, 4, '#2d3047');
+      ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(hc.x - hr * 0.7, hc.y - hr * 0.22, hr * 0.18, hr * 0.08); ctx.fillRect(hc.x + hr * 0.22, hc.y - hr * 0.22, hr * 0.18, hr * 0.08);
+      ctx.beginPath(); ctx.arc(hc.x, hc.y + hr * 0.3, hr * 0.28, 0.15 * Math.PI, 0.85 * Math.PI); ctx.lineWidth = 4; ctx.strokeStyle = o; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(hc.x - hr * 0.55, hc.y - hr * 0.78); ctx.lineTo(hc.x + hr * 0.1, hc.y - hr * 2.0); ctx.lineTo(hc.x + hr * 0.6, hc.y - hr * 0.7); ctx.closePath();
+      ctx.fillStyle = '#a55eea'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      for (const [t, c] of [[0.35, '#1dd1a1'], [0.65, '#ff6b9a']]) disc(ctx, lerp({ x: hc.x + hr * 0.02, y: hc.y - hr * 0.74 }, { x: hc.x + hr * 0.1, y: hc.y - hr * 2 }, t), hr * 0.1, c);
+      disc(ctx, { x: hc.x + hr * 0.1, y: hc.y - hr * 2.05 }, hr * 0.16, '#feca57', o, 2);
+      ctx.save(); ctx.setLineDash([sh * 0.1, sh * 0.08]); const e = guideEnd(J, 'faR');
+      line(ctx, J.eR, e, sh * 0.07, '#2d3047'); ctx.setLineDash([]); disc(ctx, e, sh * 0.13, null, '#ff6b9a', sh * 0.06);
+      ctx.restore();
+    }
+
+    // C: neon hologram on a perspective grid.
+    function holo(ctx, w, h) {
+      const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#05061a'); g.addColorStop(1, '#130b33');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      const hz = h * 0.7; ctx.strokeStyle = 'rgba(0,229,255,0.25)'; ctx.lineWidth = 1;
+      for (let i = -12; i <= 12; i++) { ctx.beginPath(); ctx.moveTo(w / 2 + i * w * 0.02, hz); ctx.lineTo(w / 2 + i * w * 0.18, h); ctx.stroke(); }
+      for (let i = 0; i < 9; i++) { const y = hz + (h - hz) * Math.pow(i / 8, 1.8); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      const { J, sh, up } = body(w, h);
+      const glow = (fn, color, blur) => { ctx.save(); ctx.shadowColor = color; ctx.shadowBlur = blur; fn(); ctx.restore(); };
+      ctx.lineCap = 'round';
+      const segs = Object.entries(LIMBS);
+      for (const [key, [a, b]] of segs) {
+        const c = scores[key] >= 0.75 ? '#00e5ff' : '#ffb84d';
+        glow(() => { line(ctx, J[a], J[b], sh * 0.2, c + '55'); line(ctx, J[a], J[b], sh * 0.07, c); line(ctx, J[a], J[b], sh * 0.025, '#ffffff'); }, c, sh * 0.5);
+      }
+      const tc = mid(J.neck, J.hips);
+      glow(() => {
+        ctx.beginPath(); ctx.moveTo(J.sL.x, J.sL.y); ctx.lineTo(J.sR.x, J.sR.y); ctx.lineTo(J.hR.x, J.hR.y); ctx.lineTo(J.hL.x, J.hL.y); ctx.closePath();
+        ctx.fillStyle = 'rgba(0,229,255,0.12)'; ctx.fill(); ctx.lineWidth = sh * 0.05; ctx.strokeStyle = '#00e5ff'; ctx.stroke();
+        line(ctx, J.neck, J.hips, sh * 0.02, 'rgba(255,255,255,0.7)');
+        disc(ctx, { x: tc.x, y: tc.y - sh * 0.15 }, sh * 0.12, null, '#ff4df0', sh * 0.04);
+      }, '#00e5ff', sh * 0.4);
+      for (const k of ['sL', 'sR', 'eL', 'eR', 'wL', 'wR', 'hL', 'hR', 'kL', 'kR', 'aL', 'aR']) glow(() => disc(ctx, J[k], sh * 0.07, '#ffffff', '#ff4df0', sh * 0.03), '#ff4df0', sh * 0.4);
+      const nTop = { x: J.neck.x + up.x * sh * 0.22, y: J.neck.y + up.y * sh * 0.22 };
+      glow(() => line(ctx, J.neck, nTop, sh * 0.05, '#00e5ff'), '#00e5ff', sh * 0.3);
+      const hr = sh * 0.42, hc = J.head;
+      glow(() => {
+        ctx.beginPath(); ctx.ellipse(hc.x, hc.y, hr * 0.85, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,229,255,0.12)'; ctx.fill(); ctx.lineWidth = sh * 0.05; ctx.strokeStyle = '#00e5ff'; ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(hc.x - hr * 0.7, hc.y - hr * 0.22, hr * 1.4, hr * 0.32, hr * 0.16);
+        ctx.fillStyle = '#ff4df0'; ctx.fill();
+      }, '#ff4df0', sh * 0.6);
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(hc.x - hr * 0.5, hc.y - hr * 0.1, hr * 1.0, hr * 0.06);
+      ctx.save(); ctx.globalAlpha = 0.07; ctx.fillStyle = '#00e5ff';
+      for (let y = 0; y < h; y += 4) ctx.fillRect(0, y, w, 1.5);
+      ctx.restore();
+      ctx.save(); ctx.setLineDash([sh * 0.08, sh * 0.08]); const e = guideEnd(J, 'faR');
+      glow(() => { line(ctx, J.eR, e, sh * 0.04, '#ffffff'); ctx.setLineDash([]); disc(ctx, e, sh * 0.12, null, '#ffb84d', sh * 0.04); }, '#ffb84d', sh * 0.4);
+      ctx.restore();
+      ctx.font = `600 ${Math.round(sh * 0.16)}px Inter, sans-serif`; ctx.fillStyle = 'rgba(0,229,255,0.8)';
+      ctx.fillText('SYNC 92%', w * 0.06, h * 0.07);
+    }
+
+    const STYLES = { smiley, beads, holo };
+
+    // Dance poses for the demo. `off` bends one limb about 30 degrees away so the match feedback shows.
+    const DEMO_POSES = {
+      disco: { pose: { torso: -6, uaL: -155, faL: -165, uaR: 45, faR: 30, thR: 28, shR: 22 }, off: { faR: 30 } },
+      airplane: { pose: { ...POSES.airplaneL, thL: -24, shL: -24, thR: 6, shR: 4 }, off: { faL: -30 } },
+      kick: { pose: { torso: 8, uaL: -145, faL: -160, uaR: 145, faR: 160, thR: 75, shR: 85 }, off: { uaL: 30 } },
+    };
+    const JOINTS = { 11: 'sL', 12: 'sR', 13: 'eL', 14: 'eR', 15: 'wL', 16: 'wR', 23: 'hL', 24: 'hR', 25: 'kL', 26: 'kR', 27: 'aL', 28: 'aR', 0: 'headC' };
+
+    // Made-up body points (mirrored, 0..1) for the pose, scaled and centred to fit a w x h canvas.
+    function landmarksFor(pose, w, h) {
+      const { j, P } = skeleton(pose, 1, 0.78);
+      const pts = Object.values(JOINTS).map(k => j[k]);
+      const minX = Math.min(...pts.map(p => p.x)), maxX = Math.max(...pts.map(p => p.x));
+      const minY = Math.min(...pts.map(p => p.y)) - P.head, maxY = Math.max(...pts.map(p => p.y));
+      const k = Math.min((h * 0.72) / (maxY - minY), (w * 0.8) / (maxX - minX));
+      const ox = w / 2 - ((minX + maxX) / 2) * k, oy = h * 0.52 - ((minY + maxY) / 2) * k;
+      const lms = Array.from({ length: 33 }, () => ({ x: 0.5, y: 0.5, visibility: 0 }));
+      for (const [i, key] of Object.entries(JOINTS)) lms[i] = { x: (ox + j[key].x * k) / w, y: (oy + j[key].y * k) / h, visibility: 1 };
+      return lms;
+    }
+
+    function drawPose(ctx, w, h, name) {
+      const { pose, off } = DEMO_POSES[name];
+      const tgt = { ...POSES.rest, ...pose };
+      const you = { ...tgt, ...Object.fromEntries(Object.entries(off).map(([k, d]) => [k, tgt[k] + d])) };
+      const lms = landmarksFor(you, w, h);
+      const scores = compare(fromLandmarks(lms, w / h), tgt).segments;
+      drawAvatar(ctx, w, h, lms, scores, createAvatar(), { target: tgt });
+    }
+    function draw() {
+      for (const c of document.querySelectorAll('canvas[data-style], canvas[data-pose]')) {
+        const dpr = devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+        c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+        const ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (c.dataset.pose) drawPose(ctx, w, h, c.dataset.pose); else STYLES[c.dataset.style](ctx, w, h);
+      }
+    }
+    draw();
+    addEventListener('resize', draw);
+    document.fonts?.ready.then(draw);
+  </script>
+</body>
+</html>
