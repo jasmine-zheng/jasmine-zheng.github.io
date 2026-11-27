@@ -1,5 +1,5 @@
 import { buildRoutine, poseAt, moveIndexAt, fromLandmarks, compare, judge, stars, SEGMENTS } from './pose.js';
-import { POSES, ROUTINES } from './routines.js';
+import { POSES, ROUTINES, MUSIC } from './routines.js';
 import { CHARACTERS, drawDancer } from './dancer.js';
 import { BeatBox } from './audio.js';
 import { Tracker } from './tracker.js';
@@ -10,9 +10,11 @@ const audio = new BeatBox();
 const tracker = new Tracker($('video'));
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const settings = { routine: 0, character: 'sunny', speed: 0.75, camera: true, upperOnly: false };
+const settings = { routine: 0, character: 'sunny', speed: 0.75, camera: true, upperOnly: false, avatar: false };
 let screen = 'start';
 let game = null;
+let preview = false;
+let previewRun = 0;
 
 // ---------- helpers ----------
 
@@ -41,10 +43,75 @@ function show(name) {
   window.scrollTo(0, 0);
 }
 
-function toast(msg) {
+function toast(msg, ms = 4000) {
   const t = $('toast');
   t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 4000);
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ---------- camera ----------
+
+const CAMERA_PROBLEMS = {
+  InsecureContextError: 'The camera only works on the secure page (https).',
+  NotAllowedError: 'The camera is blocked. Click the camera icon in the address bar and choose Allow.',
+  SecurityError: 'The camera is blocked. Click the camera icon in the address bar and choose Allow.',
+  NotFoundError: "We couldn't find a camera on this device.",
+  OverconstrainedError: "We couldn't find a camera on this device.",
+  NotReadableError: 'Another app is using the camera. Close it and try again.',
+  AbortError: 'Another app is using the camera. Close it and try again.',
+  TrackerError: "The dance tracker couldn't load. Check the internet and try again.",
+};
+const cameraProblem = err => CAMERA_PROBLEMS[err?.name] ?? 'The camera is not available right now.';
+
+async function startTracking(onStep = () => {}) {
+  onStep('Waking up the camera...');
+  await tracker.startCamera();
+  onStep('Getting the dance tracker ready...');
+  await tracker.init();
+}
+
+function setCamStatus(msg, ok = false) {
+  const el = $('camStatus');
+  if (el.textContent !== msg) el.textContent = msg;
+  el.classList.toggle('ok', ok);
+}
+
+async function startPreview() {
+  const run = ++previewRun;
+  preview = true;
+  $('camCheck').classList.add('on');
+  $('camCheckBtn').textContent = 'Stop camera';
+  try {
+    await startTracking(msg => run === previewRun && setCamStatus(msg));
+    if (run !== previewRun) tracker.stopCamera(); // stopped while the camera was still starting
+  } catch (err) {
+    console.warn(err);
+    if (run !== previewRun) return;
+    stopPreview();
+    $('camCheck').classList.add('on');
+    setCamStatus(cameraProblem(err));
+  }
+}
+
+function stopPreview() {
+  previewRun++;
+  preview = false;
+  tracker.stopCamera();
+  $('camCheck').classList.remove('on');
+  $('camCheckBtn').textContent = 'Check my camera';
+}
+
+function drawPreview() {
+  if (!preview || !tracker.ready) return;
+  const lms = tracker.detect();
+  drawCamera($('previewCanvas'), lms, {});
+  if (!lms) return setCamStatus("I can't see you yet. Stand in front of the camera!");
+  const user = fromLandmarks(lms, tracker.aspect);
+  const needed = Object.keys(SEGMENTS).filter(k => !settings.upperOnly || !/^(th|sh)/.test(k));
+  const missing = needed.filter(k => user[k].visible < 0.5);
+  if (!missing.length) setCamStatus('I can see you! Press "Let\'s Dance!" when you are ready.', true);
+  else if (missing.some(k => /^(ua|fa)/.test(k))) setCamStatus('Step back so I can see both arms!');
+  else setCamStatus(settings.upperOnly ? 'Step back a little so I can see you!' : 'Step back so I can see your legs and feet!');
 }
 
 function retrigger(el, cls) {
@@ -61,12 +128,18 @@ function renderMenus() {
     <button class="card ${i === settings.routine ? 'on' : ''}" data-i="${i}" style="--accent:${r.color};--tint:${r.color}22">
       <div class="stripe"></div>
       <h3>${r.title}</h3><p>${r.subtitle}</p>
-      <span class="meta">${r.moves.filter(m => m.judge).length} moves &middot; ${r.bpm} bpm</span>
+      <span class="meta">${r.keys ? `AI dance &middot; ${Math.round(r.totalBeats * 60 / r.bpm)} s &middot; own music` : `${r.moves.filter(m => m.judge).length} moves &middot; ${r.bpm} bpm`}</span>
     </button>`).join('');
   $('charList').innerHTML = Object.entries(CHARACTERS).map(([id, c]) => `
     <button class="card ${id === settings.character ? 'on' : ''}" data-id="${id}" style="--accent:${c.body}">
       <canvas></canvas><h3>${c.name}</h3>
     </button>`).join('');
+  // Dances extracted from video come with their own music and play at the music's speed.
+  const own = routines[settings.routine].music;
+  $('speedSeg').querySelectorAll('button').forEach(b => {
+    b.disabled = !!own;
+    b.classList.toggle('on', +b.dataset.speed === (own ? 1 : settings.speed));
+  });
 }
 
 $('routineList').addEventListener('click', e => {
@@ -79,11 +152,18 @@ $('charList').addEventListener('click', e => {
 });
 $('speedSeg').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
+  if (b.disabled) return;
   settings.speed = +b.dataset.speed;
   $('speedSeg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
 });
-$('camToggle').addEventListener('change', e => (settings.camera = e.target.checked));
+$('camToggle').addEventListener('change', e => {
+  settings.camera = e.target.checked;
+  $('camCheckBtn').disabled = !settings.camera;
+  if (!settings.camera && preview) stopPreview();
+});
+$('camCheckBtn').addEventListener('click', () => (preview ? stopPreview() : startPreview()));
 $('upperToggle').addEventListener('change', e => (settings.upperOnly = e.target.checked));
+$('avatarToggle').addEventListener('change', e => (settings.avatar = e.target.checked));
 $('muteBtn').addEventListener('click', () => {
   audio.setMuted(!audio.muted);
   $('muteBtn').textContent = `Sound: ${audio.muted ? 'off' : 'on'}`;
@@ -99,32 +179,41 @@ function drawStart() {
     const pose = loopPose(routines[0], beat + 3);
     drawDancer(ctx, pose, { cx: w / 2, groundY: h * 0.95, height: h * 0.85, character: card.dataset.id, beat });
   });
+  drawPreview();
 }
 
 // ---------- game ----------
 
 async function startGame() {
   audio.unlock();
+  audio.stopPreview();
   const routine = routines[settings.routine];
+  const music = MUSIC.find(m => m.id === routine.music);
+  const speed = routine.music ? 1 : settings.speed;
+  const trackP = music?.src
+    ? audio.load(music.src).then(buffer => ({ buffer, fadeOut: music.fadeOut })).catch(err => {
+      console.warn(err); toast(`Couldn't load "${music.title}". The StepSync beat will play instead.`); return null;
+    })
+    : null;
   let useCamera = settings.camera;
-  if (useCamera) {
+  if (preview) { preview = false; $('camCheck').classList.remove('on'); $('camCheckBtn').textContent = 'Check my camera'; }
+  if (useCamera && !tracker.ready) {
     $('loading').classList.remove('hidden');
     try {
-      $('loadingText').textContent = 'Waking up the camera...';
-      await tracker.startCamera();
-      $('loadingText').textContent = 'Getting the dance tracker ready...';
-      await tracker.init();
+      await startTracking(msg => ($('loadingText').textContent = msg));
     } catch (err) {
       console.warn(err);
       tracker.stopCamera();
       useCamera = false;
-      toast('Camera is not available, so we will just watch and dance for fun!');
+      toast(`${cameraProblem(err)} Let's just watch and dance for fun!`, 7000);
     }
     $('loading').classList.add('hidden');
   }
 
+  const track = await trackP;
+
   game = {
-    routine, useCamera, paused: false,
+    routine, useCamera, speed, paused: false,
     score: 0, combo: 0, maxPoints: routine.moves.filter(m => m.judge).length * 3,
     counts: { 'Perfect!': 0, 'Great!': 0, 'Good!': 0 },
     smooth: 0, best: 0, judgeIdx: -1, lastSeen: performance.now(),
@@ -136,7 +225,7 @@ async function startGame() {
   $('moveLabel').textContent = 'Get ready!';
   $('pauseBtn').textContent = 'Pause';
   show('play');
-  audio.start(routine.bpm * settings.speed, 4, routine.id === 'calm-stretch');
+  audio.start(routine.bpm * speed, 4, !!routine.calm, track);
 }
 
 function stopGame() {
@@ -162,21 +251,21 @@ function finishMove(idx) {
   if (points === 3 || game.combo % 3 === 0) { confetti(points === 3 ? 60 : 30); game.cheerUntil = performance.now() + 900; }
 }
 
-function drawCamera(lms, segScores) {
-  const canvas = $('camCanvas'), v = $('video');
+function drawCamera(canvas, lms, segScores) {
+  const v = $('video');
   const vw = v.videoWidth || 640, vh = v.videoHeight || 480;
   if (canvas.width !== vw || canvas.height !== vh) { canvas.width = vw; canvas.height = vh; }
   const ctx = canvas.getContext('2d');
+  if (settings.avatar) return drawAvatar(ctx, vw, vh, lms, segScores);
   ctx.save(); ctx.translate(vw, 0); ctx.scale(-1, 1); ctx.drawImage(v, 0, 0, vw, vh); ctx.restore();
   ctx.fillStyle = 'rgba(45,48,71,0.15)'; ctx.fillRect(0, 0, vw, vh);
   if (!lms) return;
-  const P = i => ({ x: lms[i].x * vw, y: lms[i].y * vh });
-  const mid = (a, b) => ({ x: (P(a).x + P(b).x) / 2, y: (P(a).y + P(b).y) / 2 });
+  const { P, mid } = landmarkPoints(lms, vw, vh);
   ctx.lineCap = 'round';
   for (const [key, [a, b]] of Object.entries(SEGMENTS)) {
     const p = Array.isArray(a) ? mid(...a) : P(a), q = Array.isArray(b) ? mid(...b) : P(b);
     const s = segScores[key];
-    const color = s == null ? 'rgba(255,255,255,0.35)' : s >= 0.75 ? '#1dd1a1' : s >= 0.4 ? '#feca57' : 'rgba(255,255,255,0.85)';
+    const color = s == null ? 'rgba(255,255,255,0.35)' : segColor(s, 'rgba(255,255,255,0.85)');
     ctx.lineWidth = key === 'torso' ? 18 : 12;
     ctx.strokeStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath(); ctx.moveTo(p.x, p.y + 2); ctx.lineTo(q.x, q.y + 2); ctx.stroke();
@@ -190,6 +279,48 @@ function drawCamera(lms, segScores) {
   }
   const nose = P(0);
   ctx.beginPath(); ctx.arc(nose.x, nose.y, 10, 0, Math.PI * 2); ctx.fillStyle = '#ff6b9a'; ctx.fill();
+}
+
+const landmarkPoints = (lms, vw, vh) => {
+  const P = i => ({ x: lms[i].x * vw, y: lms[i].y * vh });
+  return { P, mid: (a, b) => ({ x: (P(a).x + P(b).x) / 2, y: (P(a).y + P(b).y) / 2 }) };
+};
+const segColor = (s, base) => (s == null ? base : s >= 0.75 ? '#1dd1a1' : s >= 0.4 ? '#feca57' : base);
+
+// Privacy mode: never draw camera pixels, only a faceless character that follows the tracked body.
+function drawAvatar(ctx, vw, vh, lms, segScores) {
+  const bg = ctx.createLinearGradient(0, 0, 0, vh);
+  bg.addColorStop(0, '#3a3f6b'); bg.addColorStop(1, '#2d3047');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, vw, vh);
+  if (!lms) return;
+  const { P, mid } = landmarkPoints(lms, vw, vh);
+  const vis = i => (lms[i].visibility ?? 1) >= 0.5;
+  const sh = Math.max(20, Math.hypot(P(11).x - P(12).x, P(11).y - P(12).y));
+  const base = '#a29bfe', outline = '#1e1b2e';
+  const stroke = (p, q, w, color) => {
+    ctx.lineWidth = w + 6; ctx.strokeStyle = outline;
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+    ctx.lineWidth = w; ctx.strokeStyle = color;
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+  };
+  const dot = (c, r, color) => {
+    ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = outline; ctx.stroke();
+  };
+  ctx.lineCap = 'round';
+  for (const [key, [a, b]] of Object.entries(SEGMENTS)) {
+    const ends = [a, b].flat();
+    if (key === 'torso' || !ends.every(vis)) continue;
+    const p = Array.isArray(a) ? mid(...a) : P(a), q = Array.isArray(b) ? mid(...b) : P(b);
+    stroke(p, q, sh * 0.3, segColor(segScores[key], base));
+  }
+  if ([11, 12, 23, 24].every(vis)) stroke(mid(11, 12), mid(23, 24), sh * 0.85, segColor(segScores.torso, '#6c5ce7'));
+  for (const i of [15, 16]) if (vis(i)) dot(P(i), sh * 0.13, '#dfe6e9');
+  for (const i of [27, 28]) if (vis(i)) dot(P(i), sh * 0.14, '#ff6b9a');
+  const neck = mid(11, 12), nose = P(0);
+  const up = { x: nose.x - neck.x, y: nose.y - neck.y }, len = Math.hypot(up.x, up.y) || 1;
+  const r = sh * 0.38;
+  dot({ x: neck.x + (up.x / len) * Math.max(len, r * 1.3), y: neck.y + (up.y / len) * Math.max(len, r * 1.3) }, r, '#ffeaa7');
 }
 
 function playFrame() {
@@ -207,7 +338,8 @@ function playFrame() {
 
   const i = moveIndexAt(r, beat);
   const move = r.moves[i];
-  const target = move ? move.pose : r.rest;
+  // Video dances move continuously: compare with where the buddy was a moment ago (people react after seeing it).
+  const target = r.keys ? poseAt(r, Math.max(0, beat - r.lagBeats)) : move ? move.pose : r.rest;
 
   // labels
   if (i !== g.lastLabelIdx && move?.label) {
@@ -216,7 +348,7 @@ function playFrame() {
   }
   g.lastLabelIdx = i;
   const next = r.moves[i + 1];
-  const nearEnd = move && next && beat > move.start + move.beats - 1;
+  const nearEnd = !r.keys && move && next && beat > move.start + move.beats - 1;
   $('nextLabel').textContent = next?.label ? `Next: ${next.label}` : '';
   $('nextLabel').classList.toggle('show', !!(nearEnd && next.label));
 
@@ -224,7 +356,7 @@ function playFrame() {
   let segScores = {};
   if (g.useCamera && !g.paused) {
     const lms = tracker.detect();
-    const res = lms ? compare(fromLandmarks(lms, tracker.aspect), target, { upperOnly: settings.upperOnly, slow: settings.speed < 0.75 }) : null;
+    const res = lms ? compare(fromLandmarks(lms, tracker.aspect), target, { upperOnly: settings.upperOnly, slow: g.speed < 0.75 }) : null;
     segScores = res?.segments ?? {};
     if (res?.overall != null) {
       g.lastSeen = performance.now();
@@ -232,7 +364,7 @@ function playFrame() {
     } else g.smooth *= 0.9;
     $('camHint').classList.toggle('show', performance.now() - g.lastSeen > 1500);
     $('meterFill').style.height = `${Math.round(g.smooth * 100)}%`;
-    drawCamera(lms, segScores);
+    drawCamera($('camCanvas'), lms, segScores);
 
     // Judge each move in a window that lags the beat a little (kids react after seeing the move).
     const jb = beat - 0.3;
@@ -287,6 +419,7 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && screen === 'play' && !game.paused) togglePause();
+  if (document.hidden && preview) stopPreview();
 });
 
 // ---------- results ----------

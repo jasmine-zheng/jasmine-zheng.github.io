@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- Dev tool: extract per-frame segment angles from a dance video with MediaPipe.
+     Open /stepsync/tools/extract-poses.html?src=../../videos/calm_dance4.mp4&fps=10 ; the JSON appears in the page.
+     Options: crop=x,y,w,h (normalized; zooms in on one dancer, small figures are often missed), bright=1.6 / bg=60 (dark videos),
+     poses=N (max people), model=lite|full|heavy.
+     Headless run (the <img> below keeps the page "loading" on serve_slow.py so --dump-dom waits; elsewhere it just 404s):
+       python3 stepsync/tools/serve_slow.py &
+       chrome --headless=new --dump-dom "http://127.0.0.1:8002/stepsync/tools/extract-poses.html?src=...&crop=..." > out.html
+     Settings used for the bundled dances (raw output in tools/poses/, then run make_video_dances.py):
+       calm_dance4.mp4:    crop=0.40,0,0.35,0.72&poses=1                      (top-middle dancer)
+       happy_dance500.mp4: crop=0.55,0,0.40,0.85&poses=1&bright=1.5&bg=60    (right dancer; black background) -->
+<html><head><meta charset="UTF-8"><title>StepSync pose extractor</title></head>
+<body><video id="v" muted playsinline crossorigin="anonymous"></video><canvas id="c" hidden></canvas><pre id="out">working...</pre><img src="/__sleep?s=150" hidden>
+<script type="module">
+import { MP_URL, MODEL_URL } from '../js/tracker.js';
+import { fromLandmarks } from '../js/pose.js';
+
+const q = new URLSearchParams(location.search);
+const src = q.get('src'), fps = +(q.get('fps') || 10), numPoses = +(q.get('poses') || 4);
+const out = document.getElementById('out'), v = document.getElementById('v'), c = document.getElementById('c');
+// Swap MediaPipe left/right landmarks so "L" = the figure's screen-left limb, without flipping the image:
+// the buddy then looks exactly like the video (the child mirrors the buddy, as with the built-in routines).
+const SWAP = [[1, 4], [2, 5], [3, 6], [7, 8], [9, 10], [11, 12], [13, 14], [15, 16], [17, 18], [19, 20], [21, 22], [23, 24], [25, 26], [27, 28], [29, 30], [31, 32]];
+const swapSides = lms => { const o = lms.slice(); for (const [a, b] of SWAP) { o[a] = lms[b]; o[b] = lms[a]; } return o; };
+const round = x => Math.round(x * 10) / 10;
+
+try {
+  const { FilesetResolver, PoseLandmarker } = await import(`${MP_URL}/vision_bundle.mjs`);
+  const fileset = await FilesetResolver.forVisionTasks(`${MP_URL}/wasm`);
+  const make = delegate => PoseLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: MODEL_URL.replaceAll('lite', q.get('model') || 'full'), delegate },
+    runningMode: 'IMAGE', numPoses, minPoseDetectionConfidence: 0.3, minPosePresenceConfidence: 0.3,
+  });
+  let lm; try { lm = await make('GPU'); } catch { lm = await make('CPU'); }
+
+  // Load the whole file so seeking works even on servers without HTTP range support (python http.server).
+  v.src = URL.createObjectURL(await (await fetch(src)).blob());
+  await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = () => rej(new Error('video failed to load')); });
+  const [cx0, cy0, cw, ch] = (q.get('crop') || '0,0,1,1').split(',').map(Number);
+  const sx = cx0 * v.videoWidth, sy = cy0 * v.videoHeight, sw = cw * v.videoWidth, sh = ch * v.videoHeight;
+  const bg = +(q.get('bg') || 0); // lift a black background to grey (the detector does better on grey)
+  const scale = Math.max(1, 960 / sh); // upscale small crops so the figure is large for the detector
+  const W = Math.round(sw * scale), H = Math.round(sh * scale), aspect = W / H;
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  ctx.filter = `brightness(${q.get('bright') || 1}) contrast(${q.get('contrast') || 1})`;
+  const frames = [];
+  for (let t = 0; t < v.duration; t += 1 / fps) {
+    v.currentTime = t;
+    await new Promise(r => (v.onseeked = r));
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(v, sx, sy, sw, sh, 0, 0, W, H);
+    if (bg) { ctx.save(); ctx.filter = 'none'; ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgb(${bg},${bg},${bg})`; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    const res = lm.detect(c);
+    frames.push({
+      t: Math.round(t * 100) / 100,
+      poses: (res.landmarks || []).map(raw => {
+        const xs = raw.map(p => p.x), ys = raw.map(p => p.y);
+        const seg = fromLandmarks(swapSides(raw), aspect);
+        return {
+          cx: round(((Math.min(...xs) + Math.max(...xs)) / 2) * 1000) / 1000,
+          cy: round(((Math.min(...ys) + Math.max(...ys)) / 2) * 1000) / 1000,
+          h: round((Math.max(...ys) - Math.min(...ys)) * 1000) / 1000,
+          shoulderW: round(Math.abs(raw[11].x - raw[12].x) * aspect * 1000) / 1000,
+          seg: Object.fromEntries(Object.entries(seg).map(([k, s]) => [k, [round(s.angle), round(s.visible)]])),
+        };
+      }),
+    });
+  }
+  out.textContent = JSON.stringify({ src, fps, crop: [cx0, cy0, cw, ch], duration: v.duration, width: W, height: H, frames });
+} catch (e) {
+  out.textContent = 'ERROR ' + (e?.message ?? e);
+}
+</script></body></html>

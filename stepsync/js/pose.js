@@ -74,6 +74,7 @@ export const stars = (points, max) => (max && points / max >= 0.8 ? 3 : max && p
 // ---- Routines ----
 
 export function buildRoutine(def, library) {
+  if (def.keys) return buildKeyed(def, library);
   const rest = library.rest;
   let start = 0;
   const moves = def.moves.map(m => {
@@ -83,6 +84,35 @@ export function buildRoutine(def, library) {
     return move;
   });
   return { ...def, moves, rest, totalBeats: start };
+}
+
+// ---- Keyframe routines (dances extracted from video) ----
+// def: { keys: [[9 angles in SEGMENTS order], ...] evenly spaced keyBeats apart, repeat, phraseBeats, bpm }.
+// The dance is split into phrases of `phraseBeats`; each phrase is one judged move with a cheer as its label.
+
+const SEG_KEYS = Object.keys(SEGMENTS);
+const GENERIC = ['Groove!', 'Follow me!', 'Keep going!', 'Copy me!'];
+const motion = (a, b) => SEG_KEYS.reduce((s, k) => s + Math.abs(angleDiff(a[k], b[k])), 0);
+
+function buildKeyed(def, library) {
+  const one = def.keys.map(k => Object.fromEntries(SEG_KEYS.map((s, i) => [s, k[i]])));
+  const keys = Array.from({ length: def.repeat ?? 1 }, () => one).flat();
+  const totalBeats = keys.length * def.keyBeats, phrase = def.phraseBeats ?? 2;
+  const count = Math.max(1, Math.floor(totalBeats / phrase + 1e-6));
+  const moves = [];
+  for (let n = 0; n < count; n++) {
+    const start = n * phrase, beats = n === count - 1 ? totalBeats - start : phrase;
+    // The stillest key in the phrase is where the dancer "hits" the pose (shown as the move's pose).
+    const i0 = Math.round(start / def.keyBeats), i1 = Math.min(keys.length - 2, Math.round((start + beats) / def.keyBeats) - 1);
+    let still = i0, least = Infinity;
+    for (let i = Math.max(1, i0); i <= i1; i++) {
+      const m = motion(keys[i - 1], keys[i]) + motion(keys[i], keys[i + 1]);
+      if (m < least) { least = m; still = i; }
+    }
+    const pose = keys[still];
+    moves.push({ pose, start, beats, judge: true, label: GENERIC[n % GENERIC.length] });
+  }
+  return { ...def, keys, moves, rest: library.rest, totalBeats, lagBeats: (0.3 * def.bpm) / 60 };
 }
 
 const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -102,6 +132,12 @@ export function moveIndexAt(routine, beat) {
 
 // Dancer eases into each pose during the first 60% of a move, then holds it.
 export function poseAt(routine, beat) {
+  if (routine.keys) {
+    const { keys, keyBeats } = routine;
+    if (beat < 0) return { ...routine.rest };
+    const x = beat / keyBeats, i = Math.floor(x);
+    return i >= keys.length - 1 ? { ...keys[keys.length - 1] } : lerpPose(keys[i], keys[i + 1], x - i);
+  }
   const i = moveIndexAt(routine, beat);
   if (i < 0) return { ...routine.rest };
   const m = routine.moves[i];

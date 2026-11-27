@@ -1,9 +1,9 @@
 // Webcam + MediaPipe Pose Landmarker. Everything runs locally in the browser.
 import { mirror } from './pose.js';
 
-const MP_VERSION = '1.2.3';
-const MP_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}`;
-const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+export const MP_VERSION = '1.2.3';
+export const MP_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}`;
+export const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 
 export class Tracker {
   constructor(video) {
@@ -12,10 +12,21 @@ export class Tracker {
     this.stream = null;
     this.lastVideoTime = -1;
     this.result = null;
+    this.loading = null;
+    this.starting = null;
   }
 
-  async init() {
-    if (this.landmarker) return;
+  // Concurrent callers (camera check + Play) share one in-flight load.
+  init() {
+    if (this.landmarker) return Promise.resolve();
+    this.loading ??= this.load().catch(err => {
+      this.loading = null;
+      throw Object.assign(new Error(`Pose tracker failed to load: ${err?.message ?? err}`), { name: 'TrackerError', cause: err });
+    });
+    return this.loading;
+  }
+
+  async load() {
     const { FilesetResolver, PoseLandmarker } = await import(`${MP_URL}/vision_bundle.mjs`);
     const fileset = await FilesetResolver.forVisionTasks(`${MP_URL}/wasm`);
     const make = delegate => PoseLandmarker.createFromOptions(fileset, {
@@ -26,18 +37,39 @@ export class Tracker {
     try { this.landmarker = await make('GPU'); } catch { this.landmarker = await make('CPU'); }
   }
 
-  async startCamera() {
-    this.stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false,
-    });
-    this.video.srcObject = this.stream;
-    await this.video.play();
+  startCamera() {
+    if (this.stream) return Promise.resolve();
+    // Browsers hide navigator.mediaDevices outside secure contexts (https / localhost).
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+      return Promise.reject(Object.assign(new Error('Camera needs a secure (https) page'), { name: 'InsecureContextError' }));
+    }
+    if (!this.starting) {
+      const starting = this.starting = (async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false,
+        });
+        if (this.starting !== starting) { // stopCamera() was called while waiting for permission
+          stream.getTracks().forEach(t => t.stop());
+          throw Object.assign(new Error('Camera was stopped'), { name: 'CameraStoppedError' });
+        }
+        this.stream = stream;
+        this.video.srcObject = stream;
+        await this.video.play();
+      })();
+      starting.catch(() => {}).finally(() => { if (this.starting === starting) this.starting = null; });
+    }
+    return this.starting;
   }
 
   stopCamera() {
+    this.starting = null;
     this.stream?.getTracks().forEach(t => t.stop());
     this.stream = null;
     this.video.srcObject = null;
+  }
+
+  get ready() {
+    return !!(this.stream && this.landmarker);
   }
 
   get aspect() {

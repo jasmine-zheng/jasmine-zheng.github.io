@@ -1,3 +1,5 @@
+import { VIDEO_DANCES } from './video-dances.js';
+
 // Pose library: segment angles (see pose.js for the convention). Unspecified segments inherit from `rest`.
 export const POSES = {
   rest: { torso: 0, uaL: -10, faL: -8, uaR: 10, faR: 8, thL: -4, shL: -2, thR: 4, shR: 2 },
@@ -20,6 +22,13 @@ export const POSES = {
   leanL: { torso: 15, uaL: -150, faL: -140, uaR: 165, faR: -165 },
   leanR: { torso: -15, uaL: -165, faL: 165, uaR: 150, faR: 140 },
   reachUp: { uaL: -175, faL: -178, uaR: 175, faR: 178 },
+  reachL: { uaL: -175, faL: -178 },
+  reachR: { uaR: 175, faR: 178 },
+  wArms: { uaL: -45, faL: -170, uaR: 45, faR: 170 },
+  heart: { uaL: -20, faL: 100, uaR: 20, faR: -100 },
+  openArms: { uaL: -45, faL: -45, uaR: 45, faR: 45 },
+  legOutL: { thL: -35, shL: -35, uaL: -90, faL: -90, uaR: 90, faR: 90 },
+  legOutR: { thR: 35, shR: 35, uaL: -90, faL: -90, uaR: 90, faR: 90 },
 };
 
 export const ROUTINES = [
@@ -41,37 +50,42 @@ export const ROUTINES = [
       { pose: 'rest', beats: 2 },
     ],
   },
+  // For teens: wake the body up after long hours of sitting.
   {
-    id: 'robot-party', title: 'Robot Party', subtitle: 'Beep boop! Move like a robot', bpm: 108, color: '#54a0ff',
+    id: 'desk-break', title: 'Desk Break', subtitle: 'Wake up your body after hours of sitting', bpm: 96, color: '#ff6b6b',
     moves: [
       { pose: 'rest', beats: 2 },
-      { pose: 'robotL', beats: 2, label: 'Robot arms!' },
-      { pose: 'robotR', beats: 2, label: 'Switch!' },
-      { pose: 'robotL', beats: 2, label: 'Switch!' },
-      { pose: 'robotR', beats: 2, label: 'Switch!' },
-      { pose: 'airplaneL', beats: 2, label: 'Airplane!' },
-      { pose: 'airplaneR', beats: 2, label: 'Fly the other way!' },
-      { pose: 'squat', beats: 2, label: 'Squat down!' },
-      { pose: 'armsUp', beats: 2, label: 'Jump up!' },
-      { pose: 'stepL', beats: 2, label: 'Step out!' },
-      { pose: 'stepR', beats: 2, label: 'Other side!' },
-      { pose: 'muscles', beats: 2, label: 'Robot power!' },
-      { pose: 'star', beats: 2, label: 'Star!' },
+      { pose: 'reachUp', beats: 2, label: 'Stretch up tall' },
+      { pose: 'reachL', beats: 2, label: 'Climb left' },
+      { pose: 'reachR', beats: 2, label: 'Climb right' },
+      { pose: 'reachL', beats: 2, label: 'Left' },
+      { pose: 'reachR', beats: 2, label: 'Right' },
+      { pose: 'wArms', beats: 2, label: 'Squeeze shoulders back' },
+      { pose: 'reachUp', beats: 2, label: 'Press up' },
+      { pose: 'wArms', beats: 2, label: 'Squeeze' },
+      { pose: 'reachUp', beats: 2, label: 'Press up' },
+      { pose: 'leanL', beats: 2, label: 'Side bend' },
+      { pose: 'leanR', beats: 2, label: 'Other side' },
+      { pose: 'squat', beats: 2, label: 'Squat' },
+      { pose: 'rest', beats: 2 },
+      { pose: 'squat', beats: 2, label: 'Squat again' },
+      { pose: 'rest', beats: 2 },
+      { pose: 'legOutL', beats: 2, label: 'Leg out' },
+      { pose: 'legOutR', beats: 2, label: 'Other leg' },
+      { pose: 'star', beats: 1, label: 'Jumping jacks!' }, { pose: 'rest', beats: 1 },
+      { pose: 'star', beats: 1 }, { pose: 'rest', beats: 1 },
+      { pose: 'star', beats: 1 }, { pose: 'rest', beats: 1 },
+      { pose: 'armsUp', beats: 2, label: 'Finish strong!' },
       { pose: 'rest', beats: 2 },
     ],
   },
-  {
-    id: 'calm-stretch', title: 'Calm Stretch', subtitle: 'Slow, gentle and relaxing', bpm: 72, color: '#1dd1a1',
-    moves: [
-      { pose: 'rest', beats: 2 },
-      { pose: 'reachUp', beats: 4, label: 'Reach for the sky' },
-      { pose: 'leanL', beats: 4, label: 'Lean like a tree' },
-      { pose: 'leanR', beats: 4, label: 'Lean the other way' },
-      { pose: 'tPose', beats: 4, label: 'Big wings' },
-      { pose: 'airplaneL', beats: 4, label: 'Glide' },
-      { pose: 'airplaneR', beats: 4, label: 'Glide back' },
-      { pose: 'reachUp', beats: 4, label: 'Stretch up tall' },
-      { pose: 'rest', beats: 4, label: 'Relax' },
-    ],
-  },
+  // Dances extracted from the EDGE videos with MediaPipe; they come with their own music (see stepsync/tools/).
+  ...VIDEO_DANCES,
+];
+
+// Music clips for the video dances (extracted from videos/ into stepsync/music/), looped for the whole dance.
+// Other routines play the synthesized StepSync beat.
+export const MUSIC = [
+  { id: 'happy', title: 'Happy Dance', src: 'music/happy_dance.m4a' },
+  { id: 'calm', title: 'Calm Dance', src: 'music/calm_dance.m4a' },
 ];

@@ -73,7 +73,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 0 24px 32px; }
 
 .cards { display: grid; gap: 16px; }
 .routines { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.chars { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); max-width: 640px; }
+.chars { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); max-width: 920px; }
 
 .card {
   background: var(--card); border-radius: var(--radius); padding: 18px 20px; text-align: left;
@@ -104,6 +104,16 @@ main { max-width: 1200px; margin: 0 auto; padding: 0 24px 32px; }
 .switch span::after { content: ''; position: absolute; left: 4px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 .switch input:checked + span { background: var(--green); }
 .switch input:checked + span::after { transform: translateX(24px); }
+
+.cam-check { display: none; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 16px; }
+.cam-check.on { display: flex; }
+.cam-check canvas { width: 320px; max-width: 100%; aspect-ratio: 4 / 3; border-radius: 18px; background: #2d3047; box-shadow: var(--shadow); }
+.cam-status { font-family: var(--font-fun); font-size: 1.25rem; font-weight: 600; color: var(--ink-soft); max-width: 420px; }
+.cam-status.ok { color: #10ac84; }
+.seg { flex-wrap: wrap; }
+.cam-note { margin-top: 14px; font-size: 0.95rem; color: var(--ink-soft); }
+.seg button:disabled { opacity: 0.45; cursor: default; }
+.chip:disabled { opacity: 0.5; cursor: default; transform: none; }
 
 .play-row { text-align: center; margin-top: 34px; }
 .big-btn {
@@ -141,7 +151,8 @@ main { max-width: 1200px; margin: 0 auto; padding: 0 24px 32px; }
 }
 .dancer-panel canvas, .cam-panel canvas { width: 100%; height: 100%; display: block; }
 .cam-panel { background: #2d3047; }
-.cam-panel video { display: none; }
+/* Visually hidden but still rendered: Safari may not decode frames for a display:none video. */
+.video-src { position: fixed; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .cam-panel canvas { object-fit: cover; }
 .panel-tag {
   position: absolute; top: 14px; left: 14px; background: rgba(255,255,255,0.9); color: var(--ink);

@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fromLandmarks, mirror, compare, segmentScore, judge, stars, buildRoutine, poseAt, wrap } from '../js/pose.js';
+import { fromLandmarks, mirror, compare, segmentScore, judge, stars, buildRoutine, poseAt, moveIndexAt, wrap } from '../js/pose.js';
 import { POSES, ROUTINES } from '../js/routines.js';
+import { CHARACTERS, skeleton } from '../js/dancer.js';
 
 // Build 33 landmarks for a person (unmirrored camera coords) from screen-space points after mirroring.
 function person({ armsAngle = 0 } = {}) {
@@ -77,4 +78,36 @@ test('routines build, inherit rest, and interpolate along the shortest arc', () 
   assert.ok(Math.abs(mid.faR) > 170, `took long way round: ${mid.faR}`);
   close(poseAt(r, 3.5).faR, -170);
   close(poseAt(r, -1).uaL, POSES.rest.uaL);
+});
+
+test('characters: teen buddies have smaller heads; every character has a full palette', () => {
+  for (const [id, c] of Object.entries(CHARACTERS)) {
+    for (const k of ['name', 'kind', 'head', 'body', 'limb', 'shoe', 'outline']) assert.ok(c[k], `${id}.${k}`);
+  }
+  const kid = skeleton(POSES.rest, 100).P.head, teen = skeleton(POSES.rest, 100, CHARACTERS.nova.headScale).P.head;
+  assert.ok(teen < kid);
+});
+
+test('keyframe (video) routines: repeat, interpolate and split into judged phrases', () => {
+  const up = [180, -150, -155, 150, 155, -4, -2, 4, 2], down = [0, -10, -8, 10, 8, -4, -2, 4, 2];
+  const def = { id: 'k', bpm: 60, keyBeats: 0.5, repeat: 2, phraseBeats: 1, keys: [down, down, up, up] };
+  def.keys[2] = def.keys[3] = [0, -150, -155, 150, 155, -4, -2, 4, 2];
+  const r = buildRoutine(def, POSES);
+  assert.equal(r.keys.length, 8);
+  assert.equal(r.totalBeats, 4);
+  assert.equal(r.moves.length, 4);
+  assert.deepEqual(r.moves.map(m => m.start), [0, 1, 2, 3]);
+  assert.ok(r.moves.every(m => m.judge && m.label));
+  close(poseAt(r, 0.75).uaR, 80); // halfway between key 1 (10) and key 2 (150)
+  close(poseAt(r, 99).uaR, 150);
+  assert.equal(moveIndexAt(r, 2.5), 2);
+});
+
+test('video dances are built and come with their own music', () => {
+  for (const def of ROUTINES.filter(d => d.keys)) {
+    const r = buildRoutine(def, POSES);
+    assert.ok(r.music, `${def.id} has music`);
+    assert.ok(r.keys.every(k => Object.keys(k).length === 9));
+    assert.ok(r.moves.length > 5);
+  }
 });

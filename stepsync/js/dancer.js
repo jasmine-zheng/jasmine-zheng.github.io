@@ -4,7 +4,11 @@ export const CHARACTERS = {
   sunny: { name: 'Sunny', kind: 'star', head: '#ffd93d', body: '#ff9f43', limb: '#ffb86b', shoe: '#ee5253', outline: '#7a4a12' },
   bolt: { name: 'Bolt', kind: 'robot', head: '#c8d6e5', body: '#54a0ff', limb: '#8395a7', shoe: '#222f3e', outline: '#1e2a3a' },
   mimi: { name: 'Mimi', kind: 'kitty', head: '#ffb8d1', body: '#a55eea', limb: '#ffb8d1', shoe: '#5f27cd', outline: '#5a2148' },
+  // Teen buddies: smaller heads (older proportions), hair, no rosy cheeks.
+  nova: { name: 'Nova', kind: 'headphones', head: '#f1c27d', hair: '#3b2a26', accent: '#ff6b9a', body: '#6c5ce7', limb: '#34495e', shoe: '#f5f6fa', outline: '#1e1b2e', headScale: 0.78 },
+  jay: { name: 'Jay', kind: 'cap', head: '#c68642', hair: '#2d2018', accent: '#1dd1a1', body: '#ff7f50', limb: '#576574', shoe: '#ee5253', outline: '#2b1d12', headScale: 0.78 },
 };
+const TEEN = new Set(['headphones', 'cap']);
 
 const dir = a => {
   const r = (a * Math.PI) / 180;
@@ -12,8 +16,8 @@ const dir = a => {
 };
 const add = (p, d, len) => ({ x: p.x + d.x * len, y: p.y + d.y * len });
 
-export function skeleton(pose, H) {
-  const P = { torso: 0.23 * H, sw: 0.115 * H, hw: 0.07 * H, ua: 0.145 * H, fa: 0.135 * H, th: 0.15 * H, sh: 0.14 * H, neck: 0.03 * H, head: 0.16 * H };
+export function skeleton(pose, H, headScale = 1) {
+  const P = { torso: 0.23 * H, sw: 0.115 * H, hw: 0.07 * H, ua: 0.145 * H, fa: 0.135 * H, th: 0.15 * H, sh: 0.14 * H, neck: 0.03 * H, head: 0.16 * H * headScale };
   const hip = { x: 0, y: 0 };
   const up = dir(pose.torso + 180);
   const perp = { x: -up.y, y: up.x };
@@ -66,6 +70,33 @@ function drawHead(ctx, c, r, ch, up, mood, t) {
     ctx.fillStyle = ch.head; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
     ctx.beginPath(); ctx.roundRect(-r * 0.78, -r * 0.55, r * 1.56, r * 0.6, r * 0.25);
     ctx.fillStyle = '#222f3e'; ctx.fill();
+  } else if (TEEN.has(ch.kind)) {
+    if (ch.kind === 'headphones') {
+      ctx.lineWidth = r * 0.2; ctx.strokeStyle = o;
+      ctx.beginPath(); ctx.arc(0, -r * 0.05, r * 1.14, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+      ctx.lineWidth = r * 0.12; ctx.strokeStyle = ch.accent;
+      ctx.beginPath(); ctx.arc(0, -r * 0.05, r * 1.14, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+    }
+    circle(ctx, { x: 0, y: 0 }, r, ch.head, o);
+    if (ch.kind === 'cap') {
+      for (const s of [-1, 1]) circle(ctx, { x: s * r * 0.84, y: -r * 0.1 }, r * 0.2, ch.hair);
+      ctx.beginPath(); ctx.arc(0, -r * 0.3, r * 0.98, Math.PI, 0); ctx.closePath();
+      ctx.fillStyle = ch.accent; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      ctx.beginPath(); ctx.roundRect(-r * 0.15, -r * 0.42, r * 1.55, r * 0.18, r * 0.09);
+      ctx.fillStyle = ch.accent; ctx.fill(); ctx.stroke();
+      circle(ctx, { x: 0, y: -r * 1.3 }, r * 0.1, ch.accent, o, 2);
+    } else {
+      // Hair with a side-swept fringe that stays above the eyes.
+      const a0 = Math.PI * 1.06, a1 = Math.PI * 1.94;
+      ctx.beginPath(); ctx.arc(0, 0, r * 1.02, a0, a1);
+      ctx.quadraticCurveTo(r * 0.45, -r * 0.2, r * 0.05, -r * 0.5);
+      ctx.quadraticCurveTo(-r * 0.5, -r * 0.32, Math.cos(a0) * r * 1.02, Math.sin(a0) * r * 1.02);
+      ctx.closePath(); ctx.fillStyle = ch.hair; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      for (const s of [-1, 1]) {
+        ctx.beginPath(); ctx.roundRect(s * r * 1.08 - r * 0.17, -r * 0.32, r * 0.34, r * 0.62, r * 0.14);
+        ctx.fillStyle = ch.accent; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = o; ctx.stroke();
+      }
+    }
   } else {
     for (const s of [-1, 1]) {
       ctx.beginPath(); ctx.moveTo(s * r * 0.85, -r * 0.35); ctx.lineTo(s * r * 0.75, -r * 1.35); ctx.lineTo(s * r * 0.2, -r * 0.9); ctx.closePath();
@@ -84,7 +115,7 @@ function drawHead(ctx, c, r, ch, up, mood, t) {
       if (ch.kind !== 'robot') circle(ctx, { x: s * eyeX + r * 0.04, y: eyeY - r * 0.05 }, r * 0.045, '#fff');
     }
   }
-  if (ch.kind !== 'robot') for (const s of [-1, 1]) circle(ctx, { x: s * r * 0.62, y: r * 0.22 }, r * 0.13, 'rgba(255,107,129,0.45)');
+  if (ch.kind !== 'robot' && !TEEN.has(ch.kind)) for (const s of [-1, 1]) circle(ctx, { x: s * r * 0.62, y: r * 0.22 }, r * 0.13, 'rgba(255,107,129,0.45)');
   if (ch.kind === 'kitty') for (const s of [-1, 1]) for (const dy of [0.12, 0.3]) line(ctx, { x: s * r * 0.55, y: r * dy }, { x: s * r * 1.15, y: r * (dy * 1.6 - 0.1) }, 1.5, o);
 
   ctx.lineWidth = 3; ctx.strokeStyle = ch.kind === 'robot' ? '#222f3e' : '#2d3436'; ctx.lineCap = 'round';
@@ -100,7 +131,7 @@ function drawHead(ctx, c, r, ch, up, mood, t) {
 export function drawDancer(ctx, pose, opts) {
   const { cx, groundY, height: H, beat = 0, ghost = false, mood = 'happy', glow = {} } = opts;
   const ch = CHARACTERS[opts.character] || CHARACTERS.sunny;
-  const { j, P, up } = skeleton(pose, H);
+  const { j, P, up } = skeleton(pose, H, ch.headScale);
   const footR = 0.042 * H;
   const lowest = Math.max(j.aL.y, j.aR.y, j.hip.y) + footR;
   const bounce = ghost ? 0 : -Math.abs(Math.sin(beat * Math.PI)) * 0.012 * H;

@@ -44,7 +44,14 @@
         </div>
         <label class="switch"><input type="checkbox" id="camToggle" checked><span></span> Use camera</label>
         <label class="switch"><input type="checkbox" id="upperToggle"><span></span> Upper body only</label>
+        <label class="switch" title="Your camera picture is never shown, only a character that copies your moves. Good for screenshots."><input type="checkbox" id="avatarToggle"><span></span> Show me as a character</label>
+        <button id="camCheckBtn" class="chip">Check my camera</button>
       </div>
+      <div class="cam-check" id="camCheck">
+        <canvas id="previewCanvas"></canvas>
+        <p class="cam-status" id="camStatus"></p>
+      </div>
+      <p class="cam-note">Note: the camera only works when the page address starts with <b>https://</b>.</p>
 
       <div class="play-row">
         <button id="playBtn" class="big-btn">Let's Dance!</button>
@@ -69,7 +76,6 @@
           <div class="next" id="nextLabel"></div>
         </div>
         <div class="panel cam-panel" id="camPanel">
-          <video id="video" playsinline muted></video>
           <canvas id="camCanvas"></canvas>
           <div class="panel-tag">You</div>
           <div class="cam-hint" id="camHint">Step back so I can see you!</div>
@@ -96,6 +102,7 @@
     </section>
   </main>
 
+  <video id="video" class="video-src" playsinline muted></video>
   <canvas id="fx" class="fx"></canvas>
   <div id="loading" class="loading hidden"><div class="spinner"></div><p id="loadingText">Waking up the camera...</p></div>
   <div id="toast" class="toast"></div>
